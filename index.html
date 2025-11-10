@@ -210,6 +210,14 @@
             gap: 24px;
             margin-bottom: 32px;
         }
+        
+        /* New grid style for a single full-width chart */
+        .charts-grid-full {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
 
         .chart-card {
             /* Apply the glass style */
@@ -802,7 +810,31 @@
                         <div class="tat-badge tat-excellent">Release 37 Same Day: <span id="uipath-r37-target">0</span>%</div>
                     </div>
 
+                    <h3 style="margin-top: 30px; margin-bottom: 15px;">⚙️ Process Performance (from Insights)</h3>
+                    
+                    <div class="charts-grid-full">
+                        <div class="chart-card">
+                            <h3>Top 10 Processes by # Run and Status</h3>
+                            <div class="chart-container">
+                                <canvas id="processStatusChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
 
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <h3>Top 10 Processes with Faulted Jobs</h3>
+                            <div class="chart-container">
+                                <canvas id="faultedJobsChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Weekly Runs</h3>
+                            <div class="chart-container">
+                                <canvas id="weeklyRunsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
                     <h3 style="margin-top: 30px; margin-bottom: 15px;">🔌 API Endpoints</h3>
                     
                     <div class="api-endpoint">
@@ -1120,6 +1152,11 @@
             createUipathBotRateChart(botRate);
             createUipathSlaChart(poaUnder1Day);
             createUipathConversionChart(po.conversion_rate);
+
+            // == Call the new Insights chart functions ==
+            createProcessStatusChart();
+            createFaultedJobsChart();
+            createWeeklyRunsChart();
         }
 
         function formatNumber(num) {
@@ -1693,7 +1730,7 @@
         }
 
         // ==============================================
-        // ==  NEW GAUGE CHART FUNCTIONS               ==
+        // ==  GAUGE CHART FUNCTIONS                   ==
         // ==============================================
 
         /**
@@ -1768,6 +1805,148 @@
         function createUipathConversionChart(value) {
             createGaugeChart('uipathConversionChart', 'Conversion', value, chartColors.secondary);
         }
+
+        // ==============================================
+        // ==  NEW INSIGHTS CHART FUNCTIONS            ==
+        // ==============================================
+
+        function createProcessStatusChart() {
+            const ctx = document.getElementById('processStatusChart').getContext('2d');
+            const labels = ['PRDPO_50_100', 'PO_Acknowledgement_Process', 'PDPO_NON', 'PO_Release'];
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Successful',
+                            data: [35, 20, 30, 10],
+                            backgroundColor: chartColors.success + 'cc',
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Stopped',
+                            data: [0, 8, 0, 0],
+                            backgroundColor: chartColors.warning + 'cc',
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Failed',
+                            data: [0, 5, 0, 0],
+                            backgroundColor: chartColors.danger + 'cc',
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            grid: { display: false }
+                        },
+                        y: {
+                            stacked: true,
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createFaultedJobsChart() {
+            const ctx = document.getElementById('faultedJobsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bubble',
+                data: {
+                    labels: ['PRDPO_50_100', 'PO_Acknowledgement_Process', 'PDPO_NON', 'PO_Release'],
+                    datasets: [{
+                        label: 'Faulted Jobs',
+                        data: [
+                            { x: 1, y: 7, r: 5 },  // PRDPO
+                            { x: 2, y: 6, r: 15 }, // PO_Ack
+                            { x: 3, y: 4, r: 5 },  // PDPO_NON
+                            { x: 4, y: 2, r: 10 }  // PO_Release
+                        ],
+                        backgroundColor: chartColors.primary + 'cc'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                            ticks: {
+                                // Use a callback to map numeric labels back to text
+                                callback: function(value, index, ticks) {
+                                    const labels = ['', 'PRDPO_50', 'PO_Ack', 'PDPO_NON', 'PO_Release'];
+                                    return labels[index];
+                                }
+                            }
+                        },
+                        y: {
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createWeeklyRunsChart() {
+            const ctx = document.getElementById('weeklyRunsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Oct 13', 'Oct 20', 'Oct 27', 'Nov 3'],
+                    datasets: [{
+                        label: 'Weekly Runs',
+                        data: [15, 18, 45, 25],
+                        backgroundColor: chartColors.primary + 'cc',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: {
+                                color: 'rgba(148, 163, 184, 0.1)'
+                            },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+
 
         // ==============================================
         // ==  END OF NEW FUNCTIONS                    ==
