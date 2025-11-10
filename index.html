@@ -11,23 +11,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        /* Define a classier color palette */
+        /* Define a professional dark/glassy color palette */
         :root {
-            --bg-page: #f9fafb;
-            --bg-card: #ffffff;
-            --border-color: #e5e7eb;
-            --text-primary: #111827;
-            --text-secondary: #6b7280;
-            --text-value: #1f2937;
-            --accent-primary: #4f46e5; /* Classy Indigo */
-            --accent-primary-light: #eef2ff;
-            --accent-success: #10b981;
-            --accent-success-light: #d1fae5;
-            --accent-success-dark: #059669;
-            --accent-warning: #f59e0b;
-            --accent-warning-light: #fef3c7;
-            --accent-danger: #ef4444;
-            --accent-danger-light: #fee2e2;
+            --bg-page: #0f172a; /* Dark Slate 900 */
+            --bg-container: #1e293b; /* Dark Slate 800 */
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --text-primary: #e2e8f0; /* Slate 200 */
+            --text-secondary: #94a3b8; /* Slate 400 */
+            --text-value: #f8fafc; /* Slate 50 */
+            --accent-primary: #22d3ee; /* Cyan 400 */
+            --accent-primary-dark: #06b6d4; /* Cyan 500 */
+            --accent-primary-light: rgba(34, 211, 238, 0.1);
+            --accent-success: #34d399; /* Emerald 400 */
+            --accent-success-light: rgba(52, 211, 153, 0.1);
+            --accent-warning: #f59e0b; /* Amber 500 */
+            --accent-warning-light: rgba(245, 158, 11, 0.1);
+            --accent-danger: #f43f5e; /* Rose 500 */
+            --accent-danger-light: rgba(244, 63, 94, 0.1);
         }
 
         * {
@@ -41,26 +42,25 @@
             background-color: var(--bg-page);
             color: var(--text-primary);
             line-height: 1.6;
-            padding: 32px; /* More breathing room */
+            padding: 32px;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            background: var(--bg-card);
-            border-radius: 16px; /* Slightly larger radius */
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            background: var(--bg-container);
+            border-radius: 16px;
+            border: 1px solid var(--border-glass);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
             overflow: hidden;
         }
 
         .header {
-            /* Ditch the gradient. Clean and simple. */
-            background: var(--bg-card);
+            background: transparent; /* Part of the main container */
             color: var(--text-primary);
             padding: 32px;
-            text-align: left; /* Classier than center */
-            border-bottom: 1px solid var(--border-color);
+            text-align: left;
+            border-bottom: 1px solid var(--border-glass);
         }
 
         .header h1 {
@@ -92,14 +92,14 @@
 
         .tabs {
             display: flex;
-            background: #fdfdff; /* A slightly-off-white */
-            border-bottom: 1px solid var(--border-color);
+            background: transparent;
+            border-bottom: 1px solid var(--border-glass);
             overflow-x: auto;
             padding: 0 32px;
         }
 
         .tab {
-            padding: 16px 4px; /* Less horizontal, more vertical padding */
+            padding: 16px 4px;
             margin-right: 28px;
             cursor: pointer;
             border: none;
@@ -144,6 +144,17 @@
                 transform: translateY(0);
             }
         }
+        
+        /* This is the core "Glass" style */
+        .glassy-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px); /* Safari */
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            padding: 24px;
+        }
 
         .stats-grid {
             display: grid;
@@ -153,19 +164,21 @@
         }
 
         .stat-card {
-            /* NO GRADIENT */
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
+            /* Apply the glass style */
+            background: var(--bg-glass);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--border-glass);
             color: var(--text-primary);
             padding: 24px;
             border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
         }
 
         .stat-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .stat-card h3 {
@@ -178,11 +191,10 @@
         .stat-card .value {
             font-size: 36px;
             font-weight: 700;
-            color: var(--text-value); /* Dark text for clarity */
+            color: var(--text-value);
             margin-bottom: 8px;
         }
-
-        /* Make the first stat card's value use the accent color */
+        
         .stats-grid .stat-card:first-child .value {
              color: var(--accent-primary);
         }
@@ -200,11 +212,14 @@
         }
 
         .chart-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
+            /* Apply the glass style */
+            background: var(--bg-glass);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--border-glass);
             border-radius: 12px;
             padding: 24px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
         .chart-card h3 {
@@ -226,31 +241,48 @@
             font-size: 13px;
             font-weight: 600;
             margin: 4px;
+            border: 1px solid transparent;
         }
 
         .tat-excellent {
             background: var(--accent-success-light);
-            color: var(--accent-success-dark);
+            color: var(--accent-success);
+            border-color: rgba(52, 211, 153, 0.3);
         }
 
         .tat-good {
             background: var(--accent-primary-light);
             color: var(--accent-primary);
+            border-color: rgba(34, 211, 238, 0.3);
         }
 
         .tat-warning {
             background: var(--accent-warning-light);
             color: var(--accent-warning);
+            border-color: rgba(245, 158, 11, 0.3);
         }
 
         .tat-alert {
             background: var(--accent-danger-light);
             color: var(--accent-danger);
+            border-color: rgba(244, 63, 94, 0.3);
+        }
+        
+        .kpi-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--border-glass);
+            padding: 20px; 
+            border-radius: 10px;
         }
 
         .uipath-section {
-            /* NO ORANGE GRADIENT */
-            background: var(--accent-primary-light); /* Subtle accent background */
+            /* Apply the glass style */
+            background: var(--bg-glass);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--border-glass);
             color: var(--text-primary);
             padding: 32px;
             border-radius: 12px;
@@ -264,8 +296,8 @@
         }
 
         .api-endpoint {
-            background: var(--bg-card);
-            border: 1px solid #d1d5db; /* A slighly darker border */
+            background: rgba(0, 0, 0, 0.2); /* Inset, darker glass */
+            border: 1px solid var(--border-glass);
             padding: 16px;
             border-radius: 10px;
             margin: 12px 0;
@@ -276,7 +308,7 @@
         .api-method {
             display: inline-block;
             background: var(--accent-primary);
-            color: white;
+            color: var(--bg-page);
             padding: 5px 12px;
             border-radius: 6px;
             margin-right: 12px;
@@ -292,10 +324,10 @@
         }
 
         .integration-card {
-            background: var(--bg-card);
+            background: rgba(0, 0, 0, 0.15); /* Darker glass for sub-cards */
             padding: 24px;
             border-radius: 10px;
-            border: 1px solid #c7d2fe; /* Light accent border */
+            border: 1px solid var(--border-glass);
         }
 
         .integration-card h4 {
@@ -311,7 +343,7 @@
 
         .integration-card li {
             padding: 8px 0;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-glass);
         }
 
         .integration-card li:last-child {
@@ -336,7 +368,7 @@
             padding: 10px 20px;
             border: 1px solid var(--accent-primary);
             background: var(--accent-primary);
-            color: white;
+            color: var(--bg-page);
             border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
@@ -345,15 +377,15 @@
         }
 
         .export-btn:hover {
-            background: #4338ca; /* Darker indigo */
-            border-color: #4338ca;
+            background: var(--accent-primary-dark);
+            border-color: var(--accent-primary-dark);
         }
 
-        /* Added a secondary button style */
+        /* Secondary button style */
         .export-btn:nth-child(n+3) {
-             background: var(--bg-card);
+             background: transparent;
              color: var(--accent-primary);
-             border: 1px solid #c7d2fe;
+             border: 1px solid var(--accent-primary);
         }
          .export-btn:nth-child(n+3):hover {
              background: var(--accent-primary-light);
@@ -388,7 +420,21 @@
             font-size: 13px;
             margin-top: 24px;
             padding-top: 24px;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--border-glass);
+        }
+        
+        .summary-card {
+            background: var(--accent-success-light); 
+            padding: 20px; 
+            border-radius: 10px; 
+            color: var(--accent-success);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+        
+        .summary-card-r31 {
+             background: var(--accent-primary-light);
+             color: var(--accent-primary);
+             border: 1px solid rgba(34, 211, 238, 0.3);
         }
 
         @media (max-width: 768px) {
@@ -470,7 +516,7 @@
                     </div>
                 </div>
 
-                <div style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 20px; border-radius: 10px;">
+                <div class="kpi-card">
                     <h3 style="margin-bottom: 15px; font-weight: 600;">🎯 Key Performance Indicators</h3>
                     <div class="tat-badge tat-excellent">POA: 99.96% under 1 day</div>
                     <div class="tat-badge tat-excellent">Release 31: <span id="r31-same-day">0</span>% same day</div>
@@ -597,8 +643,8 @@
                     </div>
                 </div>
 
-                <div style="background: var(--accent-success-light); padding: 20px; border-radius: 10px; color: var(--accent-success-dark);">
-                    <h3 style="margin-bottom: 15px; font-weight: 600;">🎯 Performance Summary</h3>
+                <div class="summary-card">
+                    <h3 style="margin-bottom: 15px; font-weight: 600; color: #a7f3d0;">🎯 Performance Summary</h3>
                     <p><strong>Excellent Performance:</strong> 99.96% of POAs processed within 0-1 days</p>
                     <p><strong>Automation Level:</strong> <span id="poa-automation">0</span>% processed by UiPath bots</p>
                     <p><strong>Max TAT:</strong> <span id="poa-max-tat">0</span> days | <strong>Min TAT:</strong> <span id="poa-min-tat">0</span> days</p>
@@ -640,8 +686,8 @@
                     </div>
                 </div>
 
-                <div style="background: var(--accent-primary-light); padding: 20px; border-radius: 10px; color: var(--accent-primary);">
-                    <h3 style="margin-bottom: 15px; font-weight: 600;">🎯 Performance Metrics</h3>
+                <div class="summary-card summary-card-r31">
+                    <h3 style="margin-bottom: 15px; font-weight: 600; color: #a5f3fc;">🎯 Performance Metrics</h3>
                     <p><strong>Excellent Speed:</strong> <span id="r31-summary-pct">0</span>% processed same day (0-1 days)</p>
                     <p><strong>Average TAT:</strong> <span id="r31-summary-avg">0</span> days</p>
                 </div>
@@ -688,8 +734,8 @@
                     </div>
                 </div>
 
-                <div style="background: var(--accent-primary-light); padding: 20px; border-radius: 10px; color: var(--accent-primary);">
-                    <h3 style="margin-bottom: 15px; font-weight: 600;">🎯 Performance Metrics</h3>
+                <div class="summary-card summary-card-r31">
+                    <h3 style="margin-bottom: 15px; font-weight: 600; color: #a5f3fc;">🎯 Performance Metrics</h3>
                     <p><strong>Excellent Speed:</strong> <span id="r37-summary-pct">0</span>% processed same day (0-1 days)</p>
                     <p><strong>Average TAT:</strong> <span id="r37-summary-avg">0</span> days</p>
                 </div>
@@ -774,7 +820,7 @@
                         <button class="export-btn" onclick="exportData('metrics')">📈 Metrics Only</button>
                     </div>
 
-                    <div style="margin-top: 30px; padding: 20px; background: var(--bg-card); border-radius: 10px; border: 1px solid #c7d2fe;">
+                    <div style="margin-top: 30px; padding: 20px; background: rgba(0, 0, 0, 0.15); border-radius: 10px; border: 1px solid var(--border-glass);">
                         <h4 style="margin-bottom: 15px; font-weight: 600;">📚 Integration Documentation</h4>
                         <p style="margin-bottom: 10px;">UiPath bots can integrate with this dashboard through:</p>
                         <ul style="padding-left: 20px; color: var(--text-secondary); list-style-type: '✓  ';">
@@ -926,6 +972,19 @@
   }
 };
 
+        // Define a new color palette for charts
+        const chartColors = {
+            primary: '#22d3ee',
+            secondary: '#a78bfa',
+            tertiary: '#f471b5',
+            success: '#34d399',
+            warning: '#f59e0b',
+            danger: '#f43f5e',
+            light: 'rgba(226, 232, 240, 0.8)'
+        };
+
+        const chartColorsArray = Object.values(chartColors);
+
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
             loadDashboard();
@@ -1047,10 +1106,11 @@
             evt.currentTarget.classList.add('active');
         }
 
-        // Chart.js Global Config
+        // Chart.js Global Config for Dark Mode
         Chart.defaults.font.family = "'Inter', sans-serif";
         Chart.defaults.font.weight = "500";
-        Chart.defaults.color = "#6b7280";
+        Chart.defaults.color = "#94a3b8"; // Slate 400
+        Chart.defaults.borderColor = "rgba(148, 163, 184, 0.1)";
 
         // Chart creation functions
         function createProcessFlowChart(data) {
@@ -1068,13 +1128,7 @@
                             data.summary.total_releases_31,
                             data.summary.total_releases_37
                         ],
-                        backgroundColor: [
-                            'rgba(79, 70, 229, 0.8)',
-                            'rgba(99, 102, 241, 0.8)',
-                            'rgba(129, 140, 248, 0.8)',
-                            'rgba(165, 180, 252, 0.8)',
-                            'rgba(199, 210, 254, 0.8)'
-                        ],
+                        backgroundColor: chartColorsArray.map(color => color + 'cc'), // Add 80% alpha
                         borderRadius: 4
                     }]
                 },
@@ -1089,13 +1143,15 @@
                     scales: {
                         y: {
                             grid: {
-                                color: '#f3f4f6'
-                            }
+                                color: 'rgba(148, 163, 184, 0.1)'
+                            },
+                            ticks: { color: '#94a3b8' }
                         },
                         x: {
                             grid: {
                                 display: false
-                            }
+                            },
+                            ticks: { color: '#94a3b8' }
                         }
                     }
                 }
@@ -1115,8 +1171,8 @@
                             data.summary.avg_tat_release_31,
                             data.summary.avg_tat_release_37
                         ],
-                        borderColor: 'rgba(79, 70, 229, 1)',
-                        backgroundColor: 'rgba(79, 70, 229, 0.05)',
+                        borderColor: chartColors.primary,
+                        backgroundColor: 'rgba(34, 211, 238, 0.1)',
                         fill: true,
                         tension: 0.4
                     }]
@@ -1133,13 +1189,15 @@
                         y: {
                             beginAtZero: true,
                             grid: {
-                                color: '#f3f4f6'
-                            }
+                                color: 'rgba(148, 163, 184, 0.1)'
+                            },
+                            ticks: { color: '#94a3b8' }
                         },
                          x: {
                             grid: {
                                 display: false
-                            }
+                            },
+                            ticks: { color: '#94a3b8' }
                         }
                     }
                 }
@@ -1158,9 +1216,9 @@
                     datasets: [{
                         data: values,
                         backgroundColor: [
-                            'rgba(79, 70, 229, 0.8)',
-                            'rgba(129, 140, 248, 0.8)',
-                            'rgba(199, 210, 254, 0.8)'
+                            chartColors.primary,
+                            chartColors.secondary,
+                            chartColors.tertiary
                         ],
                         hoverOffset: 4
                     }]
@@ -1184,7 +1242,7 @@
                     datasets: [{
                         label: 'Count',
                         data: values,
-                        backgroundColor: 'rgba(79, 70, 229, 0.8)',
+                        backgroundColor: chartColors.primary + 'cc',
                         borderRadius: 4
                     }]
                 },
@@ -1201,12 +1259,14 @@
                         y: {
                             grid: {
                                 display: false
-                            }
+                            },
+                            ticks: { color: '#94a3b8' }
                         },
                         x: {
                             grid: {
-                                color: '#f3f4f6'
-                            }
+                                color: 'rgba(148, 163, 184, 0.1)'
+                            },
+                            ticks: { color: '#94a3b8' }
                         }
                     }
                 }
@@ -1225,7 +1285,7 @@
                     datasets: [{
                         label: 'PRs Created',
                         data: values,
-                        backgroundColor: 'rgba(99, 102, 241, 0.8)',
+                        backgroundColor: chartColors.secondary + 'cc',
                         borderRadius: 4
                     }]
                 },
@@ -1235,13 +1295,15 @@
                     scales: {
                         y: {
                             grid: {
-                                color: '#f3f4f6'
-                            }
+                                color: 'rgba(148, 163, 184, 0.1)'
+                            },
+                            ticks: { color: '#94a3b8' }
                         },
                         x: {
                             grid: {
                                 display: false
-                            }
+                            },
+                            ticks: { color: '#94a3b8' }
                         }
                     }
                 }
@@ -1260,8 +1322,8 @@
                     datasets: [{
                         data: values,
                         backgroundColor: [
-                            'rgba(16, 185, 129, 0.8)',
-                            'rgba(245, 158, 11, 0.8)'
+                            chartColors.success,
+                            chartColors.warning
                         ],
                          hoverOffset: 4
                     }]
@@ -1284,13 +1346,7 @@
                     labels: labels,
                     datasets: [{
                         data: values,
-                        backgroundColor: [
-                            'rgba(79, 70, 229, 0.8)',
-                            'rgba(99, 102, 241, 0.8)',
-                            'rgba(129, 140, 248, 0.8)',
-                            'rgba(165, 180, 252, 0.8)',
-                            'rgba(199, 210, 254, 0.8)'
-                        ],
+                        backgroundColor: chartColorsArray,
                         hoverOffset: 4
                     }]
                 },
@@ -1321,7 +1377,7 @@
                     datasets: [{
                         label: 'Count',
                         data: values,
-                        backgroundColor: 'rgba(99, 102, 241, 0.8)',
+                        backgroundColor: chartColors.secondary + 'cc',
                         borderRadius: 4
                     }]
                 },
@@ -1338,12 +1394,14 @@
                         y: {
                             grid: {
                                 display: false
-                            }
+                            },
+                            ticks: { color: '#94a3b8' }
                         },
                         x: {
                             grid: {
-                                color: '#f3f4f6'
-                            }
+                                color: 'rgba(148, 163, 184, 0.1)'
+                            },
+                            ticks: { color: '#94a3b8' }
                         }
                     }
                 }
@@ -1363,10 +1421,10 @@
                         label: 'Count',
                         data: values,
                         backgroundColor: [
-                            'rgba(16, 185, 129, 0.8)',
-                            'rgba(245, 158, 11, 0.8)',
-                            'rgba(239, 68, 68, 0.8)',
-                            'rgba(220, 38, 38, 0.8)'
+                            chartColors.success,
+                            chartColors.warning,
+                            chartColors.danger,
+                            chartColors.danger
                         ],
                         borderRadius: 4
                     }]
@@ -1382,13 +1440,15 @@
                     scales: {
                         y: {
                             grid: {
-                                color: '#f3f4f6'
-                            }
+                                color: 'rgba(148, 163, 184, 0.1)'
+                            },
+                            ticks: { color: '#94a3b8' }
                         },
                         x: {
                             grid: {
                                 display: false
-                            }
+                            },
+                            ticks: { color: '#94a3b8' }
                         }
                     }
                 }
@@ -1407,9 +1467,9 @@
                     datasets: [{
                         data: values,
                         backgroundColor: [
-                            'rgba(16, 185, 129, 0.8)',
-                            'rgba(79, 70, 229, 0.8)',
-                            'rgba(245, 158, 11, 0.8)'
+                            chartColors.success,
+                            chartColors.primary,
+                            chartColors.warning
                         ],
                         hoverOffset: 4
                     }]
@@ -1433,8 +1493,8 @@
                     datasets: [{
                         label: 'POAs',
                         data: values,
-                        borderColor: 'rgba(79, 70, 229, 1)',
-                        backgroundColor: 'rgba(79, 70, 229, 0.05)',
+                        borderColor: chartColors.primary,
+                        backgroundColor: 'rgba(34, 211, 238, 0.1)',
                         fill: true,
                         tension: 0.4
                     }]
@@ -1445,13 +1505,15 @@
                      scales: {
                         y: {
                             grid: {
-                                color: '#f3f4f6'
-                            }
+                                color: 'rgba(148, 163, 184, 0.1)'
+                            },
+                            ticks: { color: '#94a3b8' }
                         },
                         x: {
                             grid: {
                                 display: false
-                            }
+                            },
+                            ticks: { color: '#94a3b8' }
                         }
                     }
                 }
@@ -1471,10 +1533,10 @@
                         label: 'Count',
                         data: values,
                          backgroundColor: [
-                            'rgba(16, 185, 129, 0.8)',
-                            'rgba(245, 158, 11, 0.8)',
-                            'rgba(239, 68, 68, 0.8)',
-                            'rgba(220, 38, 38, 0.8)'
+                            chartColors.success,
+                            chartColors.warning,
+                            chartColors.danger,
+                            chartColors.danger
                         ],
                         borderRadius: 4
                     }]
@@ -1490,13 +1552,15 @@
                     scales: {
                         y: {
                             grid: {
-                                color: '#f3f4f6'
-                            }
+                                color: 'rgba(148, 163, 184, 0.1)'
+                            },
+                            ticks: { color: '#94a3b8' }
                         },
                         x: {
                             grid: {
                                 display: false
-                            }
+                            },
+                            ticks: { color: '#94a3b8' }
                         }
                     }
                 }
@@ -1516,10 +1580,10 @@
                         label: 'Count',
                         data: values,
                          backgroundColor: [
-                            'rgba(16, 185, 129, 0.8)',
-                            'rgba(245, 158, 11, 0.8)',
-                            'rgba(239, 68, 68, 0.8)',
-                            'rgba(220, 38, 38, 0.8)'
+                            chartColors.success,
+                            chartColors.warning,
+                            chartColors.danger,
+                            chartColors.danger
                         ],
                         borderRadius: 4
                     }]
@@ -1535,13 +1599,15 @@
                     scales: {
                         y: {
                             grid: {
-                                color: '#f3f4f6'
-                            }
+                                color: 'rgba(148, 163, 184, 0.1)'
+                            },
+                            ticks: { color: '#94a3b8' }
                         },
                         x: {
                             grid: {
                                 display: false
-                            }
+                            },
+                            ticks: { color: '#94a3b8' }
                         }
                     }
                 }
@@ -1560,7 +1626,7 @@
                     datasets: [{
                         label: 'Count',
                         data: values,
-                        backgroundColor: 'rgba(129, 140, 248, 0.8)',
+                        backgroundColor: chartColors.tertiary + 'cc',
                         borderRadius: 4
                     }]
                 },
@@ -1577,12 +1643,14 @@
                         y: {
                             grid: {
                                 display: false
-                            }
+                            },
+                            ticks: { color: '#94a3b8' }
                         },
                         x: {
                             grid: {
-                                color: '#f3f4f6'
-                            }
+                                color: 'rgba(148, 163, 184, 0.1)'
+                            },
+                            ticks: { color: '#94a3b8' }
                         }
                     }
                 }
