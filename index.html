@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procurement Dashboard - UiPath Integrated</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .uipath-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .uipath-badge::before {
+            content: "🤖";
+            margin-right: 8px;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 15px;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .subtext {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .chart-card h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .tat-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 5px;
+        }
+
+        .tat-excellent {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .tat-good {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .tat-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .tat-alert {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .uipath-section {
+            background: linear-gradient(135deg, #FF6A3D 0%, #FF8F6B 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .uipath-section h2 {
+            margin-bottom: 20px;
+        }
+
+        .api-endpoint {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .api-method {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .integration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .integration-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .integration-card h4 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .integration-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .integration-card li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .integration-card li:last-child {
+            border-bottom: none;
+        }
+
+        .integration-card li::before {
+            content: "✓";
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .export-btn {
+            padding: 12px 24px;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .export-btn:hover {
+            background: white;
+            color: #FF6A3D;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-active {
+            background: #28a745;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .timestamp {
+            text-align: center;
+            color: #6c757d;
+            font-size: 13px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏭 Procurement Process Dashboard</h1>
+            <p class="subtitle">Real-time monitoring and analytics for procurement workflows</p>
+            <div class="uipath-badge">UiPath Integrated Dashboard</div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="openTab(event, 'overview')">📊 Overview</button>
+            <button class="tab" onclick="openTab(event, 'pr-create')">📝 PR Create</button>
+            <button class="tab" onclick="openTab(event, 'po-create')">📋 PO Create</button>
+            <button class="tab" onclick="openTab(event, 'poa')">✅ POA</button>
+            <button class="tab" onclick="openTab(event, 'release-31')">🚀 Release 31</button>
+            <button class="tab" onclick="openTab(event, 'release-37')">🎯 Release 37</button>
+            <button class="tab" onclick="openTab(event, 'uipath')">🤖 UiPath Integration</button>
+        </div>
+
+        <div class="content">
+            <!-- OVERVIEW TAB -->
+            <div id="overview" class="tab-content active">
+                <h2 style="margin-bottom: 25px;">📊 Process Overview</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Purchase Requisitions</h3>
+                        <div class="value" id="total-prs">0</div>
+                        <div class="subtext">Created in period</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Purchase Orders</h3>
+                        <div class="value" id="total-pos">0</div>
+                        <div class="subtext"><span id="conversion-rate">0</span>% conversion rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Order Acknowledgements</h3>
+                        <div class="value" id="total-poas">0</div>
+                        <div class="subtext">Avg TAT: <span id="poa-tat">0</span> days</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Releases</h3>
+                        <div class="value" id="total-releases">0</div>
+                        <div class="subtext">Release 31 + Release 37</div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>📈 Process Flow Volume</h3>
+                        <div class="chart-container">
+                            <canvas id="processFlowChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>⚡ TAT Comparison</h3>
+                        <div class="chart-container">
+                            <canvas id="tatComparisonChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+                    <h3 style="margin-bottom: 15px;">🎯 Key Performance Indicators</h3>
+                    <div class="tat-badge tat-excellent">POA: 99.96% under 1 day</div>
+                    <div class="tat-badge tat-excellent">Release 31: <span id="r31-same-day">0</span>% same day</div>
+                    <div class="tat-badge tat-excellent">Release 37: <span id="r37-same-day">0</span>% same day</div>
+                    <div class="tat-badge tat-good">Bot Automation: <span id="bot-rate">0</span>%</div>
+                </div>
+            </div>
+
+            <!-- PR CREATE TAB -->
+            <div id="pr-create" class="tab-content">
+                <h2 style="margin-bottom: 25px;">📝 Purchase Requisition Analysis</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total PRs Created</h3>
+                        <div class="value" id="pr-total">0</div>
+                        <div class="subtext">All requisition types</div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>📊 By Requisition Type</h3>
+                        <div class="chart-container">
+                            <canvas id="prTypeChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>🏢 Top 10 Purchase Groups</h3>
+                        <div class="chart-container">
+                            <canvas id="prGroupChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>📅 By Month</h3>
+                        <div class="chart-container">
+                            <canvas id="prMonthChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>📋 By Status</h3>
+                        <div class="chart-container">
+                            <canvas id="prStatusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PO CREATE TAB -->
+            <div id="po-create" class="tab-content">
+                <h2 style="margin-bottom: 25px;">📋 Purchase Order Analysis</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total POs Created</h3>
+                        <div class="value" id="po-total">0</div>
+                        <div class="subtext">From <span id="pr-source">0</span> PRs</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Conversion Rate</h3>
+                        <div class="value" id="po-conversion">0%</div>
+                        <div class="subtext">PR to PO conversion</div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>📊 By Order Type</h3>
+                        <div class="chart-container">
+                            <canvas id="poTypeChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>🏢 Top 10 Purchase Groups</h3>
+                        <div class="chart-container">
+                            <canvas id="poGroupChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POA TAB -->
+            <div id="poa" class="tab-content">
+                <h2 style="margin-bottom: 25px;">✅ Order Acknowledgements (POA)</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total POAs</h3>
+                        <div class="value" id="poa-total">0</div>
+                        <div class="subtext">Order acknowledgements processed</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Average TAT</h3>
+                        <div class="value" id="poa-avg-tat">0</div>
+                        <div class="subtext">days turnaround time</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Median TAT</h3>
+                        <div class="value" id="poa-median-tat">0</div>
+                        <div class="subtext">days (50th percentile)</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Bot Processing</h3>
+                        <div class="value" id="poa-bot-count">0</div>
+                        <div class="subtext"><span id="poa-bot-pct">0</span>% automated</div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>⏱️ TAT Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="poaTatChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>🤖 Processing Method</h3>
+                        <div class="chart-container">
+                            <canvas id="poaMethodChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>📅 By Month</h3>
+                        <div class="chart-container">
+                            <canvas id="poaMonthChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #d4edda; padding: 20px; border-radius: 10px; color: #155724;">
+                    <h3 style="margin-bottom: 15px;">🎯 Performance Summary</h3>
+                    <p><strong>Excellent Performance:</strong> 99.96% of POAs processed within 0-1 days</p>
+                    <p><strong>Automation Level:</strong> <span id="poa-automation">0</span>% processed by UiPath bots</p>
+                    <p><strong>Max TAT:</strong> <span id="poa-max-tat">0</span> days | <strong>Min TAT:</strong> <span id="poa-min-tat">0</span> days</p>
+                </div>
+            </div>
+
+            <!-- RELEASE 31 TAB -->
+            <div id="release-31" class="tab-content">
+                <h2 style="margin-bottom: 25px;">🚀 PO Release 31 Analysis</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Releases</h3>
+                        <div class="value" id="r31-total">0</div>
+                        <div class="subtext">Release 31 processed</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Average TAT</h3>
+                        <div class="value" id="r31-avg-tat">0</div>
+                        <div class="subtext">days turnaround time</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Same Day Processing</h3>
+                        <div class="value" id="r31-same-day-value">0%</div>
+                        <div class="subtext">processed within 24 hours</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Median TAT</h3>
+                        <div class="value" id="r31-median-tat">0</div>
+                        <div class="subtext">days (50th percentile)</div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>⏱️ TAT Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="r31TatChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #d1ecf1; padding: 20px; border-radius: 10px; color: #0c5460;">
+                    <h3 style="margin-bottom: 15px;">🎯 Performance Metrics</h3>
+                    <p><strong>Excellent Speed:</strong> <span id="r31-summary-pct">0</span>% processed same day (0-1 days)</p>
+                    <p><strong>Average TAT:</strong> <span id="r31-summary-avg">0</span> days</p>
+                </div>
+            </div>
+
+            <!-- RELEASE 37 TAB -->
+            <div id="release-37" class="tab-content">
+                <h2 style="margin-bottom: 25px;">🎯 PO Release 37 Analysis</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Releases</h3>
+                        <div class="value" id="r37-total">0</div>
+                        <div class="subtext">Release 37 processed</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Average TAT</h3>
+                        <div class="value" id="r37-avg-tat">0</div>
+                        <div class="subtext">days turnaround time</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Same Day Processing</h3>
+                        <div class="value" id="r37-same-day-value">0%</div>
+                        <div class="subtext">processed within 24 hours</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Median TAT</h3>
+                        <div class="value" id="r37-median-tat">0</div>
+                        <div class="subtext">days (50th percentile)</div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>⏱️ TAT Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="r37TatChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>🏢 Top 10 Purchase Groups</h3>
+                        <div class="chart-container">
+                            <canvas id="r37GroupChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #d1ecf1; padding: 20px; border-radius: 10px; color: #0c5460;">
+                    <h3 style="margin-bottom: 15px;">🎯 Performance Metrics</h3>
+                    <p><strong>Excellent Speed:</strong> <span id="r37-summary-pct">0</span>% processed same day (0-1 days)</p>
+                    <p><strong>Average TAT:</strong> <span id="r37-summary-avg">0</span> days</p>
+                </div>
+            </div>
+
+            <!-- UIPATH INTEGRATION TAB -->
+            <div id="uipath" class="tab-content">
+                <div class="uipath-section">
+                    <h2>🤖 UiPath Integration Dashboard</h2>
+                    <p style="margin-bottom: 20px;">
+                        <span class="status-indicator status-active"></span>
+                        Real-time integration active
+                    </p>
+
+                    <div class="integration-grid">
+                        <div class="integration-card">
+                            <h4>📊 Current Queue Status</h4>
+                            <ul>
+                                <li>Pending POAs: <strong><span id="uipath-pending-poa">0</span></strong></li>
+                                <li>Manual POAs: <strong><span id="uipath-manual-poa">0</span></strong></li>
+                                <li>Pending Releases: <strong><span id="uipath-pending-releases">0</span></strong></li>
+                                <li>High TAT Items: <strong><span id="uipath-high-tat">0</span></strong></li>
+                            </ul>
+                        </div>
+
+                        <div class="integration-card">
+                            <h4>⚡ Automation Metrics</h4>
+                            <ul>
+                                <li>Bot Automation Rate: <strong><span id="uipath-bot-rate">0</span>%</strong></li>
+                                <li>Avg Processing Time: <strong><span id="uipath-avg-time">0</span> days</strong></li>
+                                <li>SLA Compliance: <strong><span id="uipath-sla">0</span>%</strong></li>
+                                <li>PR to PO Conversion: <strong><span id="uipath-conversion">0</span>%</strong></li>
+                            </ul>
+                        </div>
+
+                        <div class="integration-card">
+                            <h4>🎯 Performance Targets</h4>
+                            <ul>
+                                <li>POA Under 1 Day: <strong><span id="uipath-poa-target">0</span>%</strong></li>
+                                <li>Release 31 Same Day: <strong><span id="uipath-r31-target">0</span>%</strong></li>
+                                <li>Release 37 Same Day: <strong><span id="uipath-r37-target">0</span>%</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h3 style="margin-top: 30px; margin-bottom: 15px;">🔌 API Endpoints</h3>
+                    
+                    <div class="api-endpoint">
+                        <span class="api-method">GET</span> /api/procurement/summary
+                        <p style="margin-top: 10px; opacity: 0.9;">Get overall procurement statistics and KPIs</p>
+                    </div>
+
+                    <div class="api-endpoint">
+                        <span class="api-method">GET</span> /api/procurement/poa/pending
+                        <p style="margin-top: 10px; opacity: 0.9;">Retrieve pending POA items for bot processing</p>
+                    </div>
+
+                    <div class="api-endpoint">
+                        <span class="api-method">GET</span> /api/procurement/releases/queue
+                        <p style="margin-top: 10px; opacity: 0.9;">Get release queue items (Release 31/37)</p>
+                    </div>
+
+                    <div class="api-endpoint">
+                        <span class="api-method">POST</span> /api/procurement/poa/complete
+                        <p style="margin-top: 10px; opacity: 0.9;">Mark POA as completed by bot (with TAT tracking)</p>
+                    </div>
+
+                    <div class="api-endpoint">
+                        <span class="api-method">GET</span> /api/procurement/metrics/realtime
+                        <p style="margin-top: 10px; opacity: 0.9;">Real-time metrics feed for Orchestrator dashboard</p>
+                    </div>
+
+                    <div class="api-endpoint">
+                        <span class="api-method">POST</span> /webhook/procurement/alert
+                        <p style="margin-top: 10px; opacity: 0.9;">Webhook for high TAT alerts and SLA breaches</p>
+                    </div>
+
+                    <h3 style="margin-top: 30px; margin-bottom: 15px;">📥 Data Export Options</h3>
+                    <div class="export-buttons">
+                        <button class="export-btn" onclick="exportData('json')">📄 Export JSON</button>
+                        <button class="export-btn" onclick="exportData('csv')">📊 Export CSV</button>
+                        <button class="export-btn" onclick="exportData('queue')">🔄 Queue Data</button>
+                        <button class="export-btn" onclick="exportData('metrics')">📈 Metrics Only</button>
+                    </div>
+
+                    <div style="margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                        <h4 style="margin-bottom: 15px;">📚 Integration Documentation</h4>
+                        <p style="margin-bottom: 10px;">UiPath bots can integrate with this dashboard through:</p>
+                        <ul style="padding-left: 20px;">
+                            <li>REST API endpoints for data retrieval and updates</li>
+                            <li>CSV/JSON data exports for bulk processing</li>
+                            <li>Webhook notifications for real-time alerts</li>
+                            <li>Queue management for work item distribution</li>
+                            <li>Performance metrics for Orchestrator monitoring</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timestamp">
+                Dashboard generated: <span id="timestamp"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Embed the data
+        const dashboardData = {
+  "generated_at": "2025-11-10T04:26:23.375902",
+  "summary": {
+    "total_prs": 37331,
+    "total_pos": 26583,
+    "total_poas": 31135,
+    "total_releases_31": 21592,
+    "total_releases_37": 21592,
+    "avg_tat_poa": 0.07,
+    "avg_tat_release_31": 0.06,
+    "avg_tat_release_37": 0.07
+  },
+  "pr_create": {
+    "total": 37331,
+    "by_type": {
+      "TBI": 37331
+    },
+    "by_purchase_group": {
+      "Z01": 21271,
+      "E03": 12195,
+      "A14": 1574,
+      "W05": 1361,
+      "G05": 680,
+      "N03": 217,
+      "I18": 14,
+      "C06": 11,
+      "I12": 7,
+      "CM2": 1
+    },
+    "by_month": {
+      "September 2025": 6416,
+      "August 2025": 6163,
+      "June 2025": 6072,
+      "May 2025": 5974,
+      "July 2025": 5913,
+      "April 2025": 5296,
+      "November 2025": 1034,
+      "October 2025": 463
+    },
+    "by_status": {
+      "B": 37240,
+      "N": 91
+    }
+  },
+  "po_create": {
+    "total": 26583,
+    "by_type": {
+      "TBI Orders": 15102,
+      "Standard Orders": 4029,
+      "CMAC BOT": 2799,
+      "CMAC BOT Huawei/Nokia": 1824,
+      "CMAC": 1721,
+      "Repair Orders": 487,
+      "International Orders": 479,
+      "Retail Orders": 142
+    },
+    "by_purchase_group": {
+      "A14": 9306,
+      "G05": 8620,
+      "N03": 6341,
+      "W05": 1424,
+      "E02": 659,
+      "I73": 130,
+      "C06": 101,
+      "E03": 2
+    },
+    "conversion_rate": 71.21
+  },
+  "poa": {
+    "total": 31135,
+    "avg_tat": 0.07,
+    "median_tat": 0.0,
+    "max_tat": 15.0,
+    "min_tat": 0.0,
+    "by_processing_type": {
+      "SERVICE PROVIDER": 15947,
+      "BOT": 14187,
+      "MANUAL": 1001
+    },
+    "by_month": {
+      "June 2025": 6286,
+      "September 2025": 5497,
+      "May 2025": 5263,
+      "August 2025": 5138,
+      "July 2025": 4782,
+      "April 2025": 4169
+    },
+    "tat_distribution": {
+      "0-1 days": 30898,
+      "1-2 days": 39,
+      "2-3 days": 141,
+      "3+ days": 57
+    }
+  },
+  "release_31": {
+    "total": 21592,
+    "avg_tat": 0.06,
+    "median_tat": 0.0,
+    "same_day_percentage": 99.29,
+    "tat_distribution": {
+      "Same day (0-1)": 21439,
+      "1-2 days": 79,
+      "2-3 days": 55,
+      "3+ days": 19
+    }
+  },
+  "release_37": {
+    "total": 21592,
+    "avg_tat": 0.07,
+    "median_tat": 0.0,
+    "same_day_percentage": 99.21,
+    "by_purchase_group": {
+      "A14": 7380,
+      "G05": 7188,
+      "N03": 5062,
+      "W05": 1291,
+      "E02": 595,
+      "I73": 68,
+      "C06": 6,
+      "E03": 2
+    },
+    "tat_distribution": {
+      "Same day (0-1)": 21421,
+      "1-2 days": 16,
+      "2-3 days": 119,
+      "3+ days": 36
+    }
+  }
+};
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboard();
+        });
+
+        function loadDashboard() {
+            const data = dashboardData;
+            const summary = data.summary;
+            const pr = data.pr_create;
+            const po = data.po_create;
+            const poa = data.poa;
+            const r31 = data.release_31;
+            const r37 = data.release_37;
+
+            // Update Overview
+            document.getElementById('total-prs').textContent = formatNumber(summary.total_prs);
+            document.getElementById('total-pos').textContent = formatNumber(summary.total_pos);
+            document.getElementById('total-poas').textContent = formatNumber(summary.total_poas);
+            document.getElementById('total-releases').textContent = formatNumber(summary.total_releases_31 + summary.total_releases_37);
+            document.getElementById('conversion-rate').textContent = po.conversion_rate;
+            document.getElementById('poa-tat').textContent = summary.avg_tat_poa;
+            document.getElementById('r31-same-day').textContent = r31.same_day_percentage;
+            document.getElementById('r37-same-day').textContent = r37.same_day_percentage;
+            
+            // Calculate bot rate
+            const botCount = poa.by_processing_type['BOT'] || 0;
+            const botRate = ((botCount / poa.total) * 100).toFixed(2);
+            document.getElementById('bot-rate').textContent = botRate;
+
+            // Update PR Create tab
+            document.getElementById('pr-total').textContent = formatNumber(pr.total);
+
+            // Update PO Create tab
+            document.getElementById('po-total').textContent = formatNumber(po.total);
+            document.getElementById('pr-source').textContent = formatNumber(pr.total);
+            document.getElementById('po-conversion').textContent = po.conversion_rate + '%';
+
+            // Update POA tab
+            document.getElementById('poa-total').textContent = formatNumber(poa.total);
+            document.getElementById('poa-avg-tat').textContent = poa.avg_tat;
+            document.getElementById('poa-median-tat').textContent = poa.median_tat;
+            document.getElementById('poa-bot-count').textContent = formatNumber(botCount);
+            document.getElementById('poa-bot-pct').textContent = botRate;
+            document.getElementById('poa-max-tat').textContent = poa.max_tat;
+            document.getElementById('poa-min-tat').textContent = poa.min_tat;
+            document.getElementById('poa-automation').textContent = botRate;
+
+            // Update Release 31 tab
+            document.getElementById('r31-total').textContent = formatNumber(r31.total);
+            document.getElementById('r31-avg-tat').textContent = r31.avg_tat;
+            document.getElementById('r31-same-day-value').textContent = r31.same_day_percentage + '%';
+            document.getElementById('r31-median-tat').textContent = r31.median_tat;
+            document.getElementById('r31-summary-pct').textContent = r31.same_day_percentage;
+            document.getElementById('r31-summary-avg').textContent = r31.avg_tat;
+
+            // Update Release 37 tab
+            document.getElementById('r37-total').textContent = formatNumber(r37.total);
+            document.getElementById('r37-avg-tat').textContent = r37.avg_tat;
+            document.getElementById('r37-same-day-value').textContent = r37.same_day_percentage + '%';
+            document.getElementById('r37-median-tat').textContent = r37.median_tat;
+            document.getElementById('r37-summary-pct').textContent = r37.same_day_percentage;
+            document.getElementById('r37-summary-avg').textContent = r37.avg_tat;
+
+            // Update UiPath Integration tab
+            const highTatTotal = (poa.tat_distribution['3+ days'] || 0) + 
+                               (r31.tat_distribution['3+ days'] || 0) + 
+                               (r37.tat_distribution['3+ days'] || 0);
+            
+            document.getElementById('uipath-pending-poa').textContent = formatNumber(botCount);
+            document.getElementById('uipath-manual-poa').textContent = formatNumber(poa.by_processing_type['MANUAL'] || 0);
+            document.getElementById('uipath-pending-releases').textContent = formatNumber(r31.total);
+            document.getElementById('uipath-high-tat').textContent = formatNumber(highTatTotal);
+            document.getElementById('uipath-bot-rate').textContent = botRate;
+            document.getElementById('uipath-avg-time').textContent = poa.avg_tat;
+            
+            const poaUnder1Day = ((poa.tat_distribution['0-1 days'] / poa.total) * 100).toFixed(2);
+            document.getElementById('uipath-sla').textContent = poaUnder1Day;
+            document.getElementById('uipath-conversion').textContent = po.conversion_rate;
+            document.getElementById('uipath-poa-target').textContent = poaUnder1Day;
+            document.getElementById('uipath-r31-target').textContent = r31.same_day_percentage;
+            document.getElementById('uipath-r37-target').textContent = r37.same_day_percentage;
+
+            // Update timestamp
+            document.getElementById('timestamp').textContent = new Date(data.generated_at).toLocaleString();
+
+            // Create charts
+            createProcessFlowChart(data);
+            createTatComparisonChart(data);
+            createPrTypeChart(pr);
+            createPrGroupChart(pr);
+            createPrMonthChart(pr);
+            createPrStatusChart(pr);
+            createPoTypeChart(po);
+            createPoGroupChart(po);
+            createPoaTatChart(poa);
+            createPoaMethodChart(poa);
+            createPoaMonthChart(poa);
+            createR31TatChart(r31);
+            createR37TatChart(r37);
+            createR37GroupChart(r37);
+        }
+
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function openTab(evt, tabName) {
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+
+            const tabs = document.getElementsByClassName('tab');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+        // Chart creation functions
+        function createProcessFlowChart(data) {
+            const ctx = document.getElementById('processFlowChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['PR Create', 'PO Create', 'POA', 'Release 31', 'Release 37'],
+                    datasets: [{
+                        label: 'Volume',
+                        data: [
+                            data.summary.total_prs,
+                            data.summary.total_pos,
+                            data.summary.total_poas,
+                            data.summary.total_releases_31,
+                            data.summary.total_releases_37
+                        ],
+                        backgroundColor: [
+                            'rgba(102, 126, 234, 0.8)',
+                            'rgba(118, 75, 162, 0.8)',
+                            'rgba(255, 106, 61, 0.8)',
+                            'rgba(40, 167, 69, 0.8)',
+                            'rgba(0, 123, 255, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function createTatComparisonChart(data) {
+            const ctx = document.getElementById('tatComparisonChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['POA', 'Release 31', 'Release 37'],
+                    datasets: [{
+                        label: 'Average TAT (days)',
+                        data: [
+                            data.summary.avg_tat_poa,
+                            data.summary.avg_tat_release_31,
+                            data.summary.avg_tat_release_37
+                        ],
+                        borderColor: 'rgba(102, 126, 234, 1)',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function createPrTypeChart(pr) {
+            const ctx = document.getElementById('prTypeChart').getContext('2d');
+            const labels = Object.keys(pr.by_type);
+            const values = Object.values(pr.by_type);
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: [
+                            'rgba(102, 126, 234, 0.8)',
+                            'rgba(118, 75, 162, 0.8)',
+                            'rgba(255, 106, 61, 0.8)',
+                            'rgba(40, 167, 69, 0.8)',
+                            'rgba(0, 123, 255, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function createPrGroupChart(pr) {
+            const ctx = document.getElementById('prGroupChart').getContext('2d');
+            const labels = Object.keys(pr.by_purchase_group);
+            const values = Object.values(pr.by_purchase_group);
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Count',
+                        data: values,
+                        backgroundColor: 'rgba(102, 126, 234, 0.8)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function createPrMonthChart(pr) {
+            const ctx = document.getElementById('prMonthChart').getContext('2d');
+            const labels = Object.keys(pr.by_month);
+            const values = Object.values(pr.by_month);
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'PRs Created',
+                        data: values,
+                        backgroundColor: 'rgba(118, 75, 162, 0.8)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function createPrStatusChart(pr) {
+            const ctx = document.getElementById('prStatusChart').getContext('2d');
+            const labels = Object.keys(pr.by_status);
+            const values = Object.values(pr.by_status);
+            
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: [
+                            'rgba(40, 167, 69, 0.8)',
+                            'rgba(255, 193, 7, 0.8)',
+                            'rgba(220, 53, 69, 0.8)',
+                            'rgba(0, 123, 255, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function createPoTypeChart(po) {
+            const ctx = document.getElementById('poTypeChart').getContext('2d');
+            const labels = Object.keys(po.by_type);
+            const values = Object.values(po.by_type);
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: [
+                            'rgba(102, 126, 234, 0.8)',
+                            'rgba(118, 75, 162, 0.8)',
+                            'rgba(255, 106, 61, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function createPoGroupChart(po) {
+            const ctx = document.getElementById('poGroupChart').getContext('2d');
+            const labels = Object.keys(po.by_purchase_group);
+            const values = Object.values(po.by_purchase_group);
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Count',
+                        data: values,
+                        backgroundColor: 'rgba(118, 75, 162, 0.8)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function createPoaTatChart(poa) {
+            const ctx = document.getElementById('poaTatChart').getContext('2d');
+            const labels = Object.keys(poa.tat_distribution);
+            const values = Object.values(poa.tat_distribution);
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Count',
+                        data: values,
+                        backgroundColor: [
+                            'rgba(40, 167, 69, 0.8)',
+                            'rgba(255, 193, 7, 0.8)',
+                            'rgba(255, 106, 61, 0.8)',
+                            'rgba(220, 53, 69, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function createPoaMethodChart(poa) {
+            const ctx = document.getElementById('poaMethodChart').getContext('2d');
+            const labels = Object.keys(poa.by_processing_type);
+            const values = Object.values(poa.by_processing_type);
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: [
+                            'rgba(40, 167, 69, 0.8)',
+                            'rgba(255, 106, 61, 0.8)',
+                            'rgba(0, 123, 255, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function createPoaMonthChart(poa) {
+            const ctx = document.getElementById('poaMonthChart').getContext('2d');
+            const labels = Object.keys(poa.by_month);
+            const values = Object.values(poa.by_month);
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'POAs',
+                        data: values,
+                        borderColor: 'rgba(102, 126, 234, 1)',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function createR31TatChart(r31) {
+            const ctx = document.getElementById('r31TatChart').getContext('2d');
+            const labels = Object.keys(r31.tat_distribution);
+            const values = Object.values(r31.tat_distribution);
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Count',
+                        data: values,
+                        backgroundColor: [
+                            'rgba(40, 167, 69, 0.8)',
+                            'rgba(255, 193, 7, 0.8)',
+                            'rgba(255, 106, 61, 0.8)',
+                            'rgba(220, 53, 69, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function createR37TatChart(r37) {
+            const ctx = document.getElementById('r37TatChart').getContext('2d');
+            const labels = Object.keys(r37.tat_distribution);
+            const values = Object.values(r37.tat_distribution);
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Count',
+                        data: values,
+                        backgroundColor: [
+                            'rgba(40, 167, 69, 0.8)',
+                            'rgba(255, 193, 7, 0.8)',
+                            'rgba(255, 106, 61, 0.8)',
+                            'rgba(220, 53, 69, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function createR37GroupChart(r37) {
+            const ctx = document.getElementById('r37GroupChart').getContext('2d');
+            const labels = Object.keys(r37.by_purchase_group);
+            const values = Object.values(r37.by_purchase_group);
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Count',
+                        data: values,
+                        backgroundColor: 'rgba(0, 123, 255, 0.8)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function exportData(format) {
+            alert(`Exporting data in ${format.toUpperCase()} format...\n\nIn production, this would trigger a download of:\n- Dashboard JSON data\n- CSV exports\n- UiPath queue data\n- Metrics for Orchestrator`);
+        }
+    </script>
+</body>
+</html>
