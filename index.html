@@ -749,36 +749,59 @@
                         Real-time integration active
                     </p>
 
-                    <div class="integration-grid">
-                        <div class="integration-card">
-                            <h4>📊 Current Queue Status</h4>
-                            <ul>
-                                <li>Pending POAs: <strong><span id="uipath-pending-poa">0</span></strong></li>
-                                <li>Manual POAs: <strong><span id="uipath-manual-poa">0</span></strong></li>
-                                <li>Pending Releases: <strong><span id="uipath-pending-releases">0</span></strong></li>
-                                <li>High TAT Items: <strong><span id="uipath-high-tat">0</span></strong></li>
-                            </ul>
+                    <h3 style="margin-top: 30px; margin-bottom: 15px;">📊 Current Queue Status</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>Pending POAs</h3>
+                            <div class="value" id="uipath-pending-poa-visual">0</div>
+                            <div class="subtext">Items in bot queue</div>
                         </div>
-
-                        <div class="integration-card">
-                            <h4>⚡ Automation Metrics</h4>
-                            <ul>
-                                <li>Bot Automation Rate: <strong><span id="uipath-bot-rate">0</span>%</strong></li>
-                                <li>Avg Processing Time: <strong><span id="uipath-avg-time">0</span> days</strong></li>
-                                <li>SLA Compliance: <strong><span id="uipath-sla">0</span>%</strong></li>
-                                <li>PR to PO Conversion: <strong><span id="uipath-conversion">0</span>%</strong></li>
-                            </ul>
+                        <div class="stat-card">
+                            <h3>Manual POAs</h3>
+                            <div class="value" id="uipath-manual-poa-visual">0</div>
+                            <div class="subtext">Items requiring review</div>
                         </div>
-
-                        <div class="integration-card">
-                            <h4>🎯 Performance Targets</h4>
-                            <ul>
-                                <li>POA Under 1 Day: <strong><span id="uipath-poa-target">0</span>%</strong></li>
-                                <li>Release 31 Same Day: <strong><span id="uipath-r31-target">0</span>%</strong></li>
-                                <li>Release 37 Same Day: <strong><span id="uipath-r37-target">0</span>%</strong></li>
-                            </ul>
+                        <div class="stat-card">
+                            <h3>Pending Releases</h3>
+                            <div class="value" id="uipath-pending-releases-visual">0</div>
+                            <div class="subtext">Release 31 items</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>High TAT Items</h3>
+                            <div class="value" id="uipath-high-tat-visual">0</div>
+                            <div class="subtext">SLA breach risk</div>
                         </div>
                     </div>
+
+                    <h3 style="margin-top: 30px; margin-bottom: 15px;">⚡ Automation Metrics</h3>
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <h3>🤖 Bot Automation Rate</h3>
+                            <div class="chart-container">
+                                <canvas id="uipathBotRateChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h3>📈 SLA Compliance</h3>
+                            <div class="chart-container">
+                                <canvas id="uipathSlaChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h3>🔄 PR to PO Conversion</h3>
+                            <div class="chart-container">
+                                <canvas id="uipathConversionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 style="margin-top: 30px; margin-bottom: 15px;">🎯 Performance Targets</h3>
+                     <div class="kpi-card">
+                        <div class="tat-badge tat-excellent">POA Under 1 Day: <span id="uipath-poa-target">0</span>%</div>
+                        <div class="tat-badge tat-excellent">Release 31 Same Day: <span id="uipath-r31-target">0</span>%</div>
+                        <div class="tat-badge tat-excellent">Release 37 Same Day: <span id="uipath-r37-target">0</span>%</div>
+                    </div>
+
 
                     <h3 style="margin-top: 30px; margin-bottom: 15px;">🔌 API Endpoints</h3>
                     
@@ -1048,24 +1071,31 @@
             document.getElementById('r37-summary-pct').textContent = r37.same_day_percentage;
             document.getElementById('r37-summary-avg').textContent = r37.avg_tat;
 
-            // Update UiPath Integration tab
+            // ===================================================
+            // ==  UPDATED UIPATH TAB SCRIPT BLOCK              ==
+            // ===================================================
             const highTatTotal = (poa.tat_distribution['3+ days'] || 0) + 
                                (r31.tat_distribution['3+ days'] || 0) + 
                                (r37.tat_distribution['3+ days'] || 0);
             
-            document.getElementById('uipath-pending-poa').textContent = formatNumber(botCount);
-            document.getElementById('uipath-manual-poa').textContent = formatNumber(poa.by_processing_type['MANUAL'] || 0);
-            document.getElementById('uipath-pending-releases').textContent = formatNumber(r31.total);
-            document.getElementById('uipath-high-tat').textContent = formatNumber(highTatTotal);
-            document.getElementById('uipath-bot-rate').textContent = botRate;
-            document.getElementById('uipath-avg-time').textContent = poa.avg_tat;
-            
+            // Populate the new Stat Cards
+            document.getElementById('uipath-pending-poa-visual').textContent = formatNumber(botCount);
+            document.getElementById('uipath-manual-poa-visual').textContent = formatNumber(poa.by_processing_type['MANUAL'] || 0);
+            document.getElementById('uipath-pending-releases-visual').textContent = formatNumber(r31.total); // Using R31 total as "Pending Releases" per original logic
+            document.getElementById('uipath-high-tat-visual').textContent = formatNumber(highTatTotal);
+
+            // Get values for charts and target card
             const poaUnder1Day = ((poa.tat_distribution['0-1 days'] / poa.total) * 100).toFixed(2);
-            document.getElementById('uipath-sla').textContent = poaUnder1Day;
-            document.getElementById('uipath-conversion').textContent = po.conversion_rate;
+            
+            // Populate the Performance Target card
             document.getElementById('uipath-poa-target').textContent = poaUnder1Day;
             document.getElementById('uipath-r31-target').textContent = r31.same_day_percentage;
             document.getElementById('uipath-r37-target').textContent = r37.same_day_percentage;
+            
+            // ===================================================
+            // ==  END OF UIPATH SCRIPT BLOCK                   ==
+            // ===================================================
+
 
             // Update timestamp
             document.getElementById('timestamp').textContent = new Date(data.generated_at).toLocaleString();
@@ -1085,6 +1115,11 @@
             createR31TatChart(r31);
             createR37TatChart(r37);
             createR37GroupChart(r37);
+
+            // == Call the new UiPath chart functions ==
+            createUipathBotRateChart(botRate);
+            createUipathSlaChart(poaUnder1Day);
+            createUipathConversionChart(po.conversion_rate);
         }
 
         function formatNumber(num) {
@@ -1656,6 +1691,87 @@
                 }
             });
         }
+
+        // ==============================================
+        // ==  NEW GAUGE CHART FUNCTIONS               ==
+        // ==============================================
+
+        /**
+         * Helper function to create a semi-circle gauge chart
+         */
+        function createGaugeChart(canvasId, label, value, color) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const data = {
+                labels: [label, 'Remaining'],
+                datasets: [{
+                    data: [value, 100 - value],
+                    backgroundColor: [color, 'rgba(148, 163, 184, 0.1)'], // Color for value, light gray for remaining
+                    borderColor: [color, 'rgba(148, 163, 184, 0.1)'],
+                    borderWidth: 1,
+                    circumference: 180, // Makes it a semi-circle
+                    rotation: 270,      // Starts from the bottom
+                    cutout: '80%',      // Makes it a thin doughnut
+                    borderRadius: 8
+                }]
+            };
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: false
+                        },
+                        // Custom plugin to draw text in the middle
+                        customCanvas_centerText: {
+                            text: `${value}%`,
+                            color: '#f8fafc',
+                            font: 'bold 24px Inter'
+                        }
+                    }
+                },
+                // Register the custom plugin
+                plugins: [{
+                    id: 'customCanvas_centerText',
+                    beforeDraw: (chart) => {
+                        const { text, color, font } = chart.config.options.plugins.customCanvas_centerText;
+                        const ctx = chart.ctx;
+                        const x = chart.width / 2;
+                        const y = chart.height - 40; // Adjust position for semi-circle
+
+                        ctx.save();
+                        ctx.font = font;
+                        ctx.fillStyle = color;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(text, x, y);
+                        ctx.restore();
+                    }
+                }]
+            });
+        }
+
+        function createUipathBotRateChart(value) {
+            createGaugeChart('uipathBotRateChart', 'Bot Rate', value, chartColors.primary);
+        }
+
+        function createUipathSlaChart(value) {
+            createGaugeChart('uipathSlaChart', 'SLA', value, chartColors.success);
+        }
+
+        function createUipathConversionChart(value) {
+            createGaugeChart('uipathConversionChart', 'Conversion', value, chartColors.secondary);
+        }
+
+        // ==============================================
+        // ==  END OF NEW FUNCTIONS                    ==
+        // ==============================================
 
         function exportData(format) {
             alert(`Exporting data in ${format.toUpperCase()} format...\n\nIn production, this would trigger a download of:\n- Dashboard JSON data\n- CSV exports\n- UiPath queue data\n- Metrics for Orchestrator`);
