@@ -479,6 +479,7 @@
             <button class="tab" onclick="openTab(event, 'poa')">✅ POA</button>
             <button class="tab" onclick="openTab(event, 'release-31')">🚀 Release 31</button>
             <button class="tab" onclick="openTab(event, 'release-37')">🎯 Release 37</button>
+            <button class="tab" onclick="openTab(event, 'tat-analysis')">⏱️ TAT Analysis</button>
             <button class="tab" onclick="openTab(event, 'uipath')">🤖 UiPath Integration</button>
         </div>
 
@@ -542,6 +543,21 @@
                         <div class="value" id="pr-total">0</div>
                         <div class="subtext">All requisition types</div>
                     </div>
+                    <div class="stat-card">
+                        <h3>Average TAT</h3>
+                        <div class="value" id="pr-avg-tat">0</div>
+                        <div class="subtext">days turnaround time</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Median TAT</h3>
+                        <div class="value" id="pr-median-tat">0</div>
+                        <div class="subtext">days (50th percentile)</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Same Day Processing</h3>
+                        <div class="value" id="pr-same-day-value">0%</div>
+                        <div class="subtext">processed within 24 hours</div>
+                    </div>
                 </div>
 
                 <div class="charts-grid">
@@ -567,6 +583,12 @@
                         <h3>📋 By Status</h3>
                         <div class="chart-container">
                             <canvas id="prStatusChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>⏱️ PR Create TAT Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="prTatChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -748,6 +770,69 @@
                     <p><strong>Average TAT:</strong> <span id="r37-summary-avg">0</span> days</p>
                 </div>
             </div>
+            
+            <div id="tat-analysis" class="tab-content">
+                <h2 style="margin-bottom: 25px; font-weight: 600;">⏱️ Turnaround Time (TAT) Analysis</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>PR Create Avg TAT</h3>
+                        <div class="value" id="tat-pr-avg">0</div>
+                        <div class="subtext">days</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>POA Avg TAT</h3>
+                        <div class="value" id="tat-poa-avg">0</div>
+                        <div class="subtext">days</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Release 31 Avg TAT</h3>
+                        <div class="value" id="tat-r31-avg">0</div>
+                        <div class="subtext">days</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Release 37 Avg TAT</h3>
+                        <div class="value" id="tat-r37-avg">0</div>
+                        <div class="subtext">days</div>
+                    </div>
+                </div>
+
+                <div class="charts-grid-full">
+                    <div class="chart-card">
+                        <h3>⚡ TAT Comparison (All Processes)</h3>
+                        <div class="chart-container">
+                            <canvas id="tatComparisonChart_exclusive"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>⏱️ PR Create TAT Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="prTatChart_exclusive"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>⏱️ POA TAT Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="poaTatChart_exclusive"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>⏱️ Release 31 TAT Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="r31TatChart_exclusive"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>⏱️ Release 37 TAT Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="r37TatChart_exclusive"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div id="uipath" class="tab-content">
                 <div class="uipath-section">
@@ -911,6 +996,18 @@
   },
   "pr_create": {
     "total": 37331,
+    // ==============================================
+    // ==  ADDED PLACEHOLDER TAT DATA FOR PR CREATE ==
+    // ==============================================
+    "avg_tat": 0.25,
+    "median_tat": 0.0,
+    "tat_distribution": {
+      "0-1 days": 37000,
+      "1-2 days": 200,
+      "2-3 days": 100,
+      "3+ days": 31
+    },
+    // ==============================================
     "by_type": {
       "TBI": 37331
     },
@@ -1071,6 +1168,11 @@
 
             // Update PR Create tab
             document.getElementById('pr-total').textContent = formatNumber(pr.total);
+            document.getElementById('pr-avg-tat').textContent = pr.avg_tat;
+            document.getElementById('pr-median-tat').textContent = pr.median_tat;
+            const prSameDayPct = ((pr.tat_distribution['0-1 days'] / pr.total) * 100).toFixed(2);
+            document.getElementById('pr-same-day-value').textContent = prSameDayPct + '%';
+
 
             // Update PO Create tab
             document.getElementById('po-total').textContent = formatNumber(po.total);
@@ -1104,11 +1206,21 @@
             document.getElementById('r37-summary-avg').textContent = r37.avg_tat;
 
             // ===================================================
+            // ==  UPDATED TAT ANALYSIS TAB SCRIPT BLOCK        ==
+            // ===================================================
+            document.getElementById('tat-pr-avg').textContent = pr.avg_tat;
+            document.getElementById('tat-poa-avg').textContent = summary.avg_tat_poa;
+            document.getElementById('tat-r31-avg').textContent = summary.avg_tat_release_31;
+            document.getElementById('tat-r37-avg').textContent = summary.avg_tat_release_37;
+
+
+            // ===================================================
             // ==  UPDATED UIPATH TAB SCRIPT BLOCK              ==
             // ===================================================
             const highTatTotal = (poa.tat_distribution['3+ days'] || 0) + 
                                (r31.tat_distribution['3+ days'] || 0) + 
-                               (r37.tat_distribution['3+ days'] || 0);
+                               (r37.tat_distribution['3+ days'] || 0) +
+                               (pr.tat_distribution['3+ days'] || 0); // Added PR create
             
             // Populate the new Stat Cards
             document.getElementById('uipath-pending-poa-visual').textContent = formatNumber(botCount);
@@ -1134,19 +1246,32 @@
 
             // Create charts
             createProcessFlowChart(data);
-            createTatComparisonChart(data);
             createPrTypeChart(pr);
             createPrGroupChart(pr);
             createPrMonthChart(pr);
             createPrStatusChart(pr);
             createPoTypeChart(po);
             createPoGroupChart(po);
-            createPoaTatChart(poa);
             createPoaMethodChart(poa);
             createPoaMonthChart(poa);
-            createR31TatChart(r31);
-            createR37TatChart(r37);
             createR37GroupChart(r37);
+            
+            // == Call TAT charts (original and exclusive) ==
+            createTatComparisonChart(data, 'tatComparisonChart');
+            createTatComparisonChart(data, 'tatComparisonChart_exclusive');
+            
+            createPrTatChart(pr, 'prTatChart'); // New
+            createPrTatChart(pr, 'prTatChart_exclusive'); // New
+            
+            createPoaTatChart(poa, 'poaTatChart');
+            createPoaTatChart(poa, 'poaTatChart_exclusive');
+
+            createR31TatChart(r31, 'r31TatChart');
+            createR31TatChart(r31, 'r31TatChart_exclusive');
+
+            createR37TatChart(r37, 'r37TatChart');
+            createR37TatChart(r37, 'r37TatChart_exclusive');
+
 
             // == Call the new UiPath chart functions ==
             createUipathBotRateChart(botRate);
@@ -1230,15 +1355,20 @@
             });
         }
 
-        function createTatComparisonChart(data) {
-            const ctx = document.getElementById('tatComparisonChart').getContext('2d');
+        // ==============================================
+        // ==  UPDATED CHART FUNCTIONS (with canvasId) ==
+        // ==============================================
+
+        function createTatComparisonChart(data, canvasId = 'tatComparisonChart') {
+            const ctx = document.getElementById(canvasId).getContext('2d');
             new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: ['POA', 'Release 31', 'Release 37'],
+                    labels: ['PR Create', 'POA', 'Release 31', 'Release 37'], // Added PR Create
                     datasets: [{
                         label: 'Average TAT (days)',
                         data: [
+                            data.pr_create.avg_tat, // Added PR Create
                             data.summary.avg_tat_poa,
                             data.summary.avg_tat_release_31,
                             data.summary.avg_tat_release_37
@@ -1275,6 +1405,201 @@
                 }
             });
         }
+        
+        // ==============================================
+        // ==  NEW PR CREATE TAT CHART FUNCTION        ==
+        // ==============================================
+        function createPrTatChart(pr, canvasId = 'prTatChart') {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const labels = Object.keys(pr.tat_distribution);
+            const values = Object.values(pr.tat_distribution);
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Count',
+                        data: values,
+                        backgroundColor: [
+                            chartColors.success,
+                            chartColors.warning,
+                            chartColors.danger,
+                            chartColors.danger
+                        ],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: {
+                                color: 'rgba(148, 163, 184, 0.1)'
+                            },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function createPoaTatChart(poa, canvasId = 'poaTatChart') {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const labels = Object.keys(poa.tat_distribution);
+            const values = Object.values(poa.tat_distribution);
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Count',
+                        data: values,
+                        backgroundColor: [
+                            chartColors.success,
+                            chartColors.warning,
+                            chartColors.danger,
+                            chartColors.danger
+                        ],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: {
+                                color: 'rgba(148, 163, 184, 0.1)'
+                            },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function createR31TatChart(r31, canvasId = 'r31TatChart') {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const labels = Object.keys(r31.tat_distribution);
+            const values = Object.values(r31.tat_distribution);
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Count',
+                        data: values,
+                         backgroundColor: [
+                            chartColors.success,
+                            chartColors.warning,
+                            chartColors.danger,
+                            chartColors.danger
+                        ],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: {
+                                color: 'rgba(148, 163, 184, 0.1)'
+                            },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createR37TatChart(r37, canvasId = 'r37TatChart') {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const labels = Object.keys(r37.tat_distribution);
+            const values = Object.values(r37.tat_distribution);
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Count',
+                        data: values,
+                         backgroundColor: [
+                            chartColors.success,
+                            chartColors.warning,
+                            chartColors.danger,
+                            chartColors.danger
+                        ],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: {
+                                color: 'rgba(148, 163, 184, 0.1)'
+                            },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ==============================================
+        // ==  (Other chart functions)                 ==
+        // ==============================================
 
         function createPrTypeChart(pr) {
             const ctx = document.getElementById('prTypeChart').getContext('2d');
@@ -1480,53 +1805,6 @@
             });
         }
 
-        function createPoaTatChart(poa) {
-            const ctx = document.getElementById('poaTatChart').getContext('2d');
-            const labels = Object.keys(poa.tat_distribution);
-            const values = Object.values(poa.tat_distribution);
-            
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Count',
-                        data: values,
-                        backgroundColor: [
-                            chartColors.success,
-                            chartColors.warning,
-                            chartColors.danger,
-                            chartColors.danger
-                        ],
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            grid: {
-                                color: 'rgba(148, 163, 184, 0.1)'
-                            },
-                            ticks: { color: '#94a3b8' }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: { color: '#94a3b8' }
-                        }
-                    }
-                }
-            });
-        }
-
         function createPoaMethodChart(poa) {
             const ctx = document.getElementById('poaMethodChart').getContext('2d');
             const labels = Object.keys(poa.by_processing_type);
@@ -1575,100 +1853,6 @@
                     responsive: true,
                     maintainAspectRatio: false,
                      scales: {
-                        y: {
-                            grid: {
-                                color: 'rgba(148, 163, 184, 0.1)'
-                            },
-                            ticks: { color: '#94a3b8' }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: { color: '#94a3b8' }
-                        }
-                    }
-                }
-            });
-        }
-
-        function createR31TatChart(r31) {
-            const ctx = document.getElementById('r31TatChart').getContext('2d');
-            const labels = Object.keys(r31.tat_distribution);
-            const values = Object.values(r31.tat_distribution);
-            
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Count',
-                        data: values,
-                         backgroundColor: [
-                            chartColors.success,
-                            chartColors.warning,
-                            chartColors.danger,
-                            chartColors.danger
-                        ],
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            grid: {
-                                color: 'rgba(148, 163, 184, 0.1)'
-                            },
-                            ticks: { color: '#94a3b8' }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: { color: '#94a3b8' }
-                        }
-                    }
-                }
-            });
-        }
-
-        function createR37TatChart(r37) {
-            const ctx = document.getElementById('r37TatChart').getContext('2d');
-            const labels = Object.keys(r37.tat_distribution);
-            const values = Object.values(r37.tat_distribution);
-            
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Count',
-                        data: values,
-                         backgroundColor: [
-                            chartColors.success,
-                            chartColors.warning,
-                            chartColors.danger,
-                            chartColors.danger
-                        ],
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
                         y: {
                             grid: {
                                 color: 'rgba(148, 163, 184, 0.1)'
