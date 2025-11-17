@@ -61,6 +61,14 @@
             padding: 32px;
             text-align: left;
             border-bottom: 1px solid var(--border-glass);
+            display: flex; /* Use flexbox for layout */
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .header-title {
+            flex-grow: 1;
         }
 
         .header h1 {
@@ -89,6 +97,61 @@
             content: "🤖";
             margin-right: 8px;
         }
+        
+        /* ============================================== */
+        /* ==  NEW DATE FILTER STYLES                  == */
+        /* ============================================== */
+        .filter-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-container label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        .filter-container input[type="date"] {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+        
+        /* Style for date picker indicator */
+        .filter-container input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            opacity: 0.7;
+            cursor: pointer;
+        }
+        
+        .filter-btn {
+            padding: 6px 14px;
+            border: 1px solid var(--accent-primary);
+            background: var(--accent-primary);
+            color: var(--bg-page);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn:hover {
+            background: var(--accent-primary-dark);
+            border-color: var(--accent-primary-dark);
+        }
+        /* ============================================== */
+        /* ==  END OF DATE FILTER STYLES               == */
+        /* ============================================== */
+
 
         .tabs {
             display: flex;
@@ -454,6 +517,8 @@
             }
             .header {
                 padding: 24px;
+                flex-direction: column;
+                align-items: flex-start;
             }
             .tabs {
                 padding: 0 24px;
@@ -461,16 +526,29 @@
             .charts-grid {
                 grid-template-columns: 1fr;
             }
+            .filter-container {
+                width: 100%;
+                justify-content: flex-start;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏭 Procurement Process Dashboard</h1>
-            <p class="subtitle">Real-time monitoring and analytics for procurement workflows</p>
-            <div class="uipath-badge">UiPath Integrated Dashboard</div>
-        </div>
+            <div class="header-title">
+                <h1>🏭 Procurement Process Dashboard</h1>
+                <p class="subtitle">Real-time monitoring and analytics for procurement workflows</p>
+                <div class="uipath-badge">UiPath Integrated Dashboard</div>
+            </div>
+            <div class="filter-container">
+                <label for="start-date">Start Date:</label>
+                <input type="date" id="start-date" name="start-date">
+                <label for="end-date">End Date:</label>
+                <input type="date" id="end-date" name="end-date">
+                <button id="apply-filter-btn" class="filter-btn">Apply</button>
+            </div>
+            </div>
 
         <div class="tabs">
             <button class="tab active" onclick="openTab(event, 'overview')">📊 Overview</button>
@@ -586,12 +664,43 @@
                         </div>
                     </div>
                     <div class="chart-card">
-                        <h3>⏱️ PR Create TAT Distribution</h3>
+                        <h3>⏱️ Overall PR Create TAT Distribution</h3>
                         <div class="chart-container">
                             <canvas id="prTatChart"></canvas>
                         </div>
                     </div>
                 </div>
+                
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">⏱️ PR Subprocess TAT Analysis</h3>
+                <div class="charts-grid-full">
+                    <div class="chart-card">
+                        <h3>Avg TAT by PR Subprocess</h3>
+                        <div class="chart-container">
+                            <canvas id="prSubprocessAvgTatChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>TAT Distribution (Subprocess A)</h3>
+                        <div class="chart-container">
+                            <canvas id="prTatDistA"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>TAT Distribution (Subprocess B)</h3>
+                        <div class="chart-container">
+                            <canvas id="prTatDistB"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>TAT Distribution (Subprocess C)</h3>
+                        <div class="chart-container">
+                            <canvas id="prTatDistC"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
             </div>
 
             <div id="po-create" class="tab-content">
@@ -999,18 +1108,25 @@
     // ==============================================
     // ==  ADDED PLACEHOLDER TAT DATA FOR PR CREATE ==
     // ==============================================
-    "avg_tat": 0.25,
+    "avg_tat": 0.32,
     "median_tat": 0.0,
     "tat_distribution": {
-      "0-1 days": 37000,
-      "1-2 days": 200,
-      "2-3 days": 100,
-      "3+ days": 31
+      "0-1 days": 36100,
+      "1-2 days": 700,
+      "2-3 days": 445,
+      "3+ days": 86
+    },
+    "by_type": {
+        "TBI - Subprocess A": 15000,
+        "TBI - Subprocess B": 20000,
+        "TBI - Subprocess C": 2331
+    },
+    "by_type_tat": {
+        "TBI - Subprocess A": { "avg_tat": 0.15, "median_tat": 0.0, "tat_distribution": { "0-1 days": 14900, "1-2 days": 80, "2-3 days": 15, "3+ days": 5 } },
+        "TBI - Subprocess B": { "avg_tat": 0.30, "median_tat": 0.0, "tat_distribution": { "0-1 days": 19000, "1-2 days": 600, "2-3 days": 300, "3+ days": 100 } },
+        "TBI - Subprocess C": { "avg_tat": 0.85, "median_tat": 1.0, "tat_distribution": { "0-1 days": 2000, "1-2 days": 100, "2-3 days": 200, "3+ days": 31 } }
     },
     // ==============================================
-    "by_type": {
-      "TBI": 37331
-    },
     "by_purchase_group": {
       "Z01": 21271,
       "E03": 12195,
@@ -1137,12 +1253,45 @@
 
         const chartColorsArray = Object.values(chartColors);
 
+        // Store chart instances to destroy them before redrawing
+        let chartInstances = {};
+
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
+            // Set default dates
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('end-date').value = today;
+            // Set start date to 30 days ago
+            let startDate = new Date();
+            startDate.setDate(startDate.getDate() - 30);
+            document.getElementById('start-date').value = startDate.toISOString().split('T')[0];
+
+            
+            // Add event listener for the filter button
+            document.getElementById('apply-filter-btn').addEventListener('click', loadDashboard);
+            
+            // Initial load
             loadDashboard();
         });
 
         function loadDashboard() {
+            
+            // ==============================================
+            // ==  NEW DATE FILTER LOGIC                 ==
+            // ==============================================
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            
+            // In a real application, you'd fetch new data here.
+            // For now, we'll just show an alert and reload the static data.
+            alert(`Applying filters from ${startDate} to ${endDate}\n\n(Note: Data will not change as it is static)`);
+            
+            // Destroy existing charts before redrawing
+            Object.values(chartInstances).forEach(chart => chart.destroy());
+            chartInstances = {};
+
+            // ==============================================
+            
             const data = dashboardData;
             const summary = data.summary;
             const pr = data.pr_create;
@@ -1282,6 +1431,14 @@
             createProcessStatusChart();
             createFaultedJobsChart();
             createWeeklyRunsChart();
+            
+            // == Call the new PR Subprocess chart functions ==
+            createPrSubprocessAvgTatChart(pr);
+            // Loop through keys to create distribution charts
+            const subprocesses = Object.keys(pr.by_type_tat);
+            createPrSubprocessDistChart(pr, subprocesses[0], 'prTatDistA');
+            createPrSubprocessDistChart(pr, subprocesses[1], 'prTatDistB');
+            createPrSubprocessDistChart(pr, subprocesses[2], 'prTatDistC');
         }
 
         function formatNumber(num) {
@@ -1302,6 +1459,14 @@
             document.getElementById(tabName).classList.add('active');
             evt.currentTarget.classList.add('active');
         }
+        
+        // Helper function to create chart and store instance
+        function createChart(canvasId, config) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const newChart = new Chart(ctx, config);
+            chartInstances[canvasId] = newChart;
+        }
+
 
         // Chart.js Global Config for Dark Mode
         Chart.defaults.font.family = "'Inter', sans-serif";
@@ -1311,8 +1476,7 @@
 
         // Chart creation functions
         function createProcessFlowChart(data) {
-            const ctx = document.getElementById('processFlowChart').getContext('2d');
-            new Chart(ctx, {
+            createChart('processFlowChart', {
                 type: 'bar',
                 data: {
                     labels: ['PR Create', 'PO Create', 'POA', 'Release 31', 'Release 37'],
@@ -1360,8 +1524,7 @@
         // ==============================================
 
         function createTatComparisonChart(data, canvasId = 'tatComparisonChart') {
-            const ctx = document.getElementById(canvasId).getContext('2d');
-            new Chart(ctx, {
+            createChart(canvasId, {
                 type: 'line',
                 data: {
                     labels: ['PR Create', 'POA', 'Release 31', 'Release 37'], // Added PR Create
@@ -1410,11 +1573,10 @@
         // ==  NEW PR CREATE TAT CHART FUNCTION        ==
         // ==============================================
         function createPrTatChart(pr, canvasId = 'prTatChart') {
-            const ctx = document.getElementById(canvasId).getContext('2d');
             const labels = Object.keys(pr.tat_distribution);
             const values = Object.values(pr.tat_distribution);
             
-            new Chart(ctx, {
+            createChart(canvasId, {
                 type: 'bar',
                 data: {
                     labels: labels,
@@ -1457,11 +1619,10 @@
         }
         
         function createPoaTatChart(poa, canvasId = 'poaTatChart') {
-            const ctx = document.getElementById(canvasId).getContext('2d');
             const labels = Object.keys(poa.tat_distribution);
             const values = Object.values(poa.tat_distribution);
             
-            new Chart(ctx, {
+            createChart(canvasId, {
                 type: 'bar',
                 data: {
                     labels: labels,
@@ -1504,11 +1665,10 @@
         }
         
         function createR31TatChart(r31, canvasId = 'r31TatChart') {
-            const ctx = document.getElementById(canvasId).getContext('2d');
             const labels = Object.keys(r31.tat_distribution);
             const values = Object.values(r31.tat_distribution);
             
-            new Chart(ctx, {
+            createChart(canvasId, {
                 type: 'bar',
                 data: {
                     labels: labels,
@@ -1551,11 +1711,10 @@
         }
 
         function createR37TatChart(r37, canvasId = 'r37TatChart') {
-            const ctx = document.getElementById(canvasId).getContext('2d');
             const labels = Object.keys(r37.tat_distribution);
             const values = Object.values(r37.tat_distribution);
             
-            new Chart(ctx, {
+            createChart(canvasId, {
                 type: 'bar',
                 data: {
                     labels: labels,
@@ -1602,11 +1761,10 @@
         // ==============================================
 
         function createPrTypeChart(pr) {
-            const ctx = document.getElementById('prTypeChart').getContext('2d');
             const labels = Object.keys(pr.by_type);
             const values = Object.values(pr.by_type);
             
-            new Chart(ctx, {
+            createChart('prTypeChart', {
                 type: 'doughnut',
                 data: {
                     labels: labels,
@@ -1622,17 +1780,24 @@
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15
+                            }
+                        }
+                    }
                 }
             });
         }
 
         function createPrGroupChart(pr) {
-            const ctx = document.getElementById('prGroupChart').getContext('2d');
             const labels = Object.keys(pr.by_purchase_group);
             const values = Object.values(pr.by_purchase_group);
             
-            new Chart(ctx, {
+            createChart('prGroupChart', {
                 type: 'bar',
                 data: {
                     labels: labels,
@@ -1671,11 +1836,10 @@
         }
 
         function createPrMonthChart(pr) {
-            const ctx = document.getElementById('prMonthChart').getContext('2d');
             const labels = Object.keys(pr.by_month);
             const values = Object.values(pr.by_month);
             
-            new Chart(ctx, {
+            createChart('prMonthChart', {
                 type: 'bar',
                 data: {
                     labels: labels,
@@ -1708,11 +1872,10 @@
         }
 
         function createPrStatusChart(pr) {
-            const ctx = document.getElementById('prStatusChart').getContext('2d');
             const labels = Object.keys(pr.by_status);
             const values = Object.values(pr.by_status);
             
-            new Chart(ctx, {
+            createChart('prStatusChart', {
                 type: 'pie',
                 data: {
                     labels: labels,
@@ -1733,11 +1896,10 @@
         }
 
         function createPoTypeChart(po) {
-            const ctx = document.getElementById('poTypeChart').getContext('2d');
             const labels = Object.keys(po.by_type);
             const values = Object.values(po.by_type);
             
-            new Chart(ctx, {
+            createChart('poTypeChart', {
                 type: 'doughnut',
                 data: {
                     labels: labels,
@@ -1763,11 +1925,10 @@
         }
 
         function createPoGroupChart(po) {
-            const ctx = document.getElementById('poGroupChart').getContext('2d');
             const labels = Object.keys(po.by_purchase_group);
             const values = Object.values(po.by_purchase_group);
             
-            new Chart(ctx, {
+            createChart('poGroupChart', {
                 type: 'bar',
                 data: {
                     labels: labels,
@@ -1806,11 +1967,10 @@
         }
 
         function createPoaMethodChart(poa) {
-            const ctx = document.getElementById('poaMethodChart').getContext('2d');
             const labels = Object.keys(poa.by_processing_type);
             const values = Object.values(poa.by_processing_type);
             
-            new Chart(ctx, {
+            createChart('poaMethodChart', {
                 type: 'doughnut',
                 data: {
                     labels: labels,
@@ -1832,11 +1992,10 @@
         }
 
         function createPoaMonthChart(poa) {
-            const ctx = document.getElementById('poaMonthChart').getContext('2d');
             const labels = Object.keys(poa.by_month);
             const values = Object.values(poa.by_month);
             
-            new Chart(ctx, {
+            createChart('poaMonthChart', {
                 type: 'line',
                 data: {
                     labels: labels,
@@ -1871,11 +2030,10 @@
         }
 
         function createR37GroupChart(r37) {
-            const ctx = document.getElementById('r37GroupChart').getContext('2d');
             const labels = Object.keys(r37.by_purchase_group);
             const values = Object.values(r37.by_purchase_group);
             
-            new Chart(ctx, {
+            createChart('r37GroupChart', {
                 type: 'bar',
                 data: {
                     labels: labels,
@@ -1921,7 +2079,6 @@
          * Helper function to create a semi-circle gauge chart
          */
         function createGaugeChart(canvasId, label, value, color) {
-            const ctx = document.getElementById(canvasId).getContext('2d');
             const data = {
                 labels: [label, 'Remaining'],
                 datasets: [{
@@ -1936,7 +2093,7 @@
                 }]
             };
             
-            new Chart(ctx, {
+            createChart(canvasId, {
                 type: 'doughnut',
                 data: data,
                 options: {
@@ -1995,10 +2152,9 @@
         // ==============================================
 
         function createProcessStatusChart() {
-            const ctx = document.getElementById('processStatusChart').getContext('2d');
             const labels = ['PRDPO_50_100', 'PO_Acknowledgement_Process', 'PDPO_NON', 'PO_Release'];
             
-            new Chart(ctx, {
+            createChart('processStatusChart', {
                 type: 'bar',
                 data: {
                     labels: labels,
@@ -2049,8 +2205,7 @@
         }
 
         function createFaultedJobsChart() {
-            const ctx = document.getElementById('faultedJobsChart').getContext('2d');
-            new Chart(ctx, {
+            createChart('faultedJobsChart', {
                 type: 'bubble',
                 data: {
                     labels: ['PRDPO_50_100', 'PO_Acknowledgement_Process', 'PDPO_NON', 'PO_Release'],
@@ -2093,8 +2248,7 @@
         }
 
         function createWeeklyRunsChart() {
-            const ctx = document.getElementById('weeklyRunsChart').getContext('2d');
-            new Chart(ctx, {
+            createChart('weeklyRunsChart', {
                 type: 'bar',
                 data: {
                     labels: ['Oct 13', 'Oct 20', 'Oct 27', 'Nov 3'],
@@ -2125,6 +2279,91 @@
                                 display: false
                             },
                             ticks: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ==============================================
+        // ==  NEW PR SUBPROCESS CHART FUNCTIONS       ==
+        // ==============================================
+        
+        function createPrSubprocessAvgTatChart(pr) {
+            const labels = Object.keys(pr.by_type_tat);
+            const values = labels.map(key => pr.by_type_tat[key].avg_tat);
+            
+            createChart('prSubprocessAvgTatChart', {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Avg TAT (days)',
+                        data: values,
+                        backgroundColor: [
+                            chartColors.primary + 'cc',
+                            chartColors.secondary + 'cc',
+                            chartColors.tertiary + 'cc'
+                        ],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function createPrSubprocessDistChart(pr, subprocessName, canvasId) {
+            const distData = pr.by_type_tat[subprocessName].tat_distribution;
+            const labels = Object.keys(distData);
+            const values = Object.values(distData);
+            
+            createChart(canvasId, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Count',
+                        data: values,
+                        backgroundColor: [
+                            chartColors.success,
+                            chartColors.warning,
+                            chartColors.danger,
+                            chartColors.danger
+                        ],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        },
+                        x: {
+                            grid: { display: false }
                         }
                     }
                 }
