@@ -1,129 +1,117 @@
 {
-  "generated_at": "2025-11-10T04:26:23.375902",
+  "generated_at": "2025-11-17T07:15:30.358494",
   "summary": {
-    "total_prs": 37331,
-    "total_pos": 26583,
-    "total_poas": 31135,
-    "total_releases_31": 21592,
-    "total_releases_37": 21592,
+    "total_prs": 43768,
+    "total_pos": 53166,
+    "total_poas": 47354,
+    "total_releases_31": 23469,
+    "total_releases_37": 23469,
     "avg_tat_poa": 0.07,
-    "avg_tat_release_31": 0.06,
-    "avg_tat_release_37": 0.07
+    "avg_tat_release_31": 0.05,
+    "avg_tat_release_37": 0.05
   },
   "pr_create": {
-    "total": 37331,
+    "total": 43768,
     "by_type": {
-      "TBI": 37331
+      "TBI": 40072,
+      "Other": 3696
     },
     "by_purchase_group": {
-      "Z01": 21271,
-      "E03": 12195,
-      "A14": 1574,
-      "W05": 1361,
-      "G05": 680,
-      "N03": 217,
-      "I18": 14,
-      "C06": 11,
-      "I12": 7,
-      "CM2": 1
+      "Z01": 22894,
+      "E03": 13136,
+      "Z04": 2233,
+      "A14": 1993,
+      "W05": 1695,
+      "G05": 818,
+      "N03": 267,
+      "A05": 138,
+      "BL1": 93,
+      "E02": 83
     },
     "by_month": {
+      "November 2025": 7471,
       "September 2025": 6416,
       "August 2025": 6163,
       "June 2025": 6072,
       "May 2025": 5974,
       "July 2025": 5913,
       "April 2025": 5296,
-      "November 2025": 1034,
       "October 2025": 463
-    },
-    "by_status": {
-      "B": 37240,
-      "N": 91
     }
   },
   "po_create": {
-    "total": 26583,
+    "total": 53166,
     "by_type": {
-      "TBI Orders": 15102,
-      "Standard Orders": 4029,
-      "CMAC BOT": 2799,
-      "CMAC BOT Huawei/Nokia": 1824,
-      "CMAC": 1721,
-      "Repair Orders": 487,
-      "International Orders": 479,
-      "Retail Orders": 142
+      "TBI Orders": 30204,
+      "Standard Orders": 8058,
+      "CMAC BOT": 5598,
+      "CMAC BOT Huawei/Nokia": 3648,
+      "CMAC": 3442,
+      "Repair Orders": 974,
+      "International Orders": 958,
+      "Retail Orders": 284
     },
     "by_purchase_group": {
-      "A14": 9306,
-      "G05": 8620,
-      "N03": 6341,
-      "W05": 1424,
-      "E02": 659,
-      "I73": 130,
-      "C06": 101,
-      "E03": 2
+      "A14": 18612,
+      "G05": 17240,
+      "N03": 12682,
+      "W05": 2848,
+      "E02": 1318,
+      "I73": 260,
+      "C06": 202,
+      "E03": 4
     },
-    "conversion_rate": 71.21
+    "conversion_rate": 121.47
   },
   "poa": {
-    "total": 31135,
+    "total": 47354,
     "avg_tat": 0.07,
     "median_tat": 0.0,
     "max_tat": 15.0,
     "min_tat": 0.0,
     "by_processing_type": {
-      "SERVICE PROVIDER": 15947,
-      "BOT": 14187,
-      "MANUAL": 1001
+      "SERVICE PROVIDER": 23409,
+      "BOT": 22410,
+      "MANUAL": 1535
     },
     "by_month": {
+      "September 2025": 10994,
+      "August 2025": 10276,
       "June 2025": 6286,
-      "September 2025": 5497,
+      "October 2025": 5584,
       "May 2025": 5263,
-      "August 2025": 5138,
       "July 2025": 4782,
       "April 2025": 4169
     },
     "tat_distribution": {
-      "0-1 days": 30898,
-      "1-2 days": 39,
-      "2-3 days": 141,
-      "3+ days": 57
+      "0-1 days": 47061,
+      "1-2 days": 50,
+      "2-3 days": 179,
+      "3+ days": 64
     }
   },
   "release_31": {
-    "total": 21592,
-    "avg_tat": 0.06,
+    "total": 23469,
+    "avg_tat": 0.05,
     "median_tat": 0.0,
-    "same_day_percentage": 99.29,
+    "same_day_percentage": 99.95,
     "tat_distribution": {
-      "Same day (0-1)": 21439,
-      "1-2 days": 79,
-      "2-3 days": 55,
-      "3+ days": 19
+      "Same day (0-1)": 23457,
+      "1-2 days": 11,
+      "2-3 days": 0,
+      "3+ days": 0
     }
   },
   "release_37": {
-    "total": 21592,
-    "avg_tat": 0.07,
+    "total": 23469,
+    "avg_tat": 0.05,
     "median_tat": 0.0,
-    "same_day_percentage": 99.21,
-    "by_purchase_group": {
-      "A14": 7380,
-      "G05": 7188,
-      "N03": 5062,
-      "W05": 1291,
-      "E02": 595,
-      "I73": 68,
-      "C06": 6,
-      "E03": 2
-    },
+    "same_day_percentage": 99.95,
     "tat_distribution": {
-      "Same day (0-1)": 21421,
-      "1-2 days": 16,
-      "2-3 days": 119,
-      "3+ days": 36
+      "Same day (0-1)": 23457,
+      "1-2 days": 11,
+      "2-3 days": 0,
+      "3+ days": 0
     }
   }
 }

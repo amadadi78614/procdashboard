@@ -1,16 +1,16 @@
 {
   "process_metrics": {
-    "pr_to_po_conversion": 71.21,
-    "bot_automation_rate": 45.57,
+    "pr_to_po_conversion": 121.47,
+    "bot_automation_rate": 47.32,
     "avg_processing_time": {
       "poa": 0.07,
-      "release_31": 0.06,
-      "release_37": 0.07
+      "release_31": 0.05,
+      "release_37": 0.05
     },
     "sla_compliance": {
-      "poa_under_1day": 99.24,
-      "release_31_same_day": 99.29,
-      "release_37_same_day": 99.21
+      "poa_under_1day": 99.38,
+      "release_31_same_day": 99.95,
+      "release_37_same_day": 99.95
     }
   }
 }

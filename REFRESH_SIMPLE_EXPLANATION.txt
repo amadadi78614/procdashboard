@@ -1,0 +1,230 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║              🔄 DAILY REFRESH - THE SIMPLE EXPLANATION                       ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+🎯 THE 3-SENTENCE ANSWER
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Every day you get a new Consolidated.xlsx file with updated data
+
+2. You save it to your dashboard folder and double-click REFRESH_DASHBOARD.bat
+
+3. Your dashboard automatically updates to show the new data (takes 10 seconds)
+
+
+📱 LIKE YOUR PHONE
+═══════════════════════════════════════════════════════════════════════════════
+
+Think of it like your phone checking for updates:
+
+📱 PHONE:                           💻 DASHBOARD:
+─────────                          ──────────────
+New data available                  You get new Excel file
+Click "Update"                      Double-click batch file
+Phone updates (30 seconds)          Dashboard updates (10 seconds)
+✅ Done!                            ✅ Done!
+
+
+🎬 WHAT YOU DO (Super Simple)
+═══════════════════════════════════════════════════════════════════════════════
+
+MONDAY MORNING:
+┌─────────────────────────────────────────────────────────────┐
+│  1. 📧 Get new Consolidated.xlsx via email                  │
+│     ↓                                                       │
+│  2. 💾 Save it to your dashboard folder                     │
+│     ↓                                                       │
+│  3. 🖱️  Double-click REFRESH_DASHBOARD.bat                 │
+│     ↓                                                       │
+│  4. ⏱️  Wait 10 seconds                                     │
+│     ↓                                                       │
+│  5. ✅ Done! Dashboard shows Monday's data                  │
+└─────────────────────────────────────────────────────────────┘
+
+TUESDAY MORNING:
+Same thing! Get Tuesday's file, save, double-click, done.
+
+That's it. Every day. 10 seconds.
+
+
+📊 WHAT HAPPENS ON YOUR DASHBOARD
+═══════════════════════════════════════════════════════════════════════════════
+
+BEFORE REFRESH:                    AFTER REFRESH:
+─────────────────                 ────────────────
+Dashboard shows Sunday's data  →  Dashboard shows Monday's data
+
+All numbers update:                All numbers update:
+• Total PRs: 37,331            →  • Total PRs: 37,500
+• Total POs: 26,583            →  • Total POs: 26,800
+• TAT: 0.07 days               →  • TAT: 0.08 days
+
+Timestamp:                         Timestamp:
+Generated: Nov 10, 2025        →  Generated: Nov 11, 2025 8:02 AM
+
+All charts redraw automatically with new data!
+
+
+🔍 WHERE IS IT ON THE DASHBOARD?
+═══════════════════════════════════════════════════════════════════════════════
+
+It's NOT a special feature you click on the dashboard.
+
+The refresh happens BEFORE you open the dashboard:
+
+  STEP 1: Run refresh script      (updates files on your computer)
+          ↓
+  STEP 2: Open dashboard HTML     (shows updated data)
+
+The UiPath integration tab (tab 7) shows you stats ABOUT the refresh:
+• How many items updated
+• Bot automation rate
+• Queue status
+• But you don't click anything there to refresh
+
+
+📁 FILES YOU GOT
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ REFRESH_DASHBOARD.bat          ← Double-click this (Windows)
+✅ refresh_dashboard.sh            ← Or this (Mac/Linux)
+✅ refresh_dashboard.py            ← This does the work
+✅ DAILY_REFRESH_GUIDE.md          ← Full instructions
+✅ REFRESH_VISUAL_GUIDE.txt        ← Visual walkthrough
+
+
+🖱️ WHICH FILE TO CLICK?
+═══════════════════════════════════════════════════════════════════════════════
+
+Windows: REFRESH_DASHBOARD.bat
+Mac:     refresh_dashboard.sh
+
+That's it! Just double-click one of these.
+
+
+⏰ HOW OFTEN?
+═══════════════════════════════════════════════════════════════════════════════
+
+As often as you get new data!
+
+Daily?     → Refresh daily
+Weekly?    → Refresh weekly  
+Hourly?    → Refresh hourly
+Never?     → Dashboard still works with current data
+
+
+💾 WHAT ABOUT OLD DATA?
+═══════════════════════════════════════════════════════════════════════════════
+
+Automatically backed up every time!
+
+After Monday refresh:
+├─ 📊 Consolidated.xlsx           [Monday's file - NEW]
+├─ 🌐 dashboard HTML               [Shows Monday - UPDATED]
+└─ 📁 backup_20251110_080000/     [Sunday's files - SAFE]
+
+After Tuesday refresh:
+├─ 📊 Consolidated.xlsx           [Tuesday's file - NEW]
+├─ 🌐 dashboard HTML               [Shows Tuesday - UPDATED]
+├─ 📁 backup_20251110_080000/     [Sunday - SAFE]
+└─ 📁 backup_20251111_080215/     [Monday - SAFE]
+
+You can always go back!
+
+
+🤖 DOES UIPATH NEED ANYTHING?
+═══════════════════════════════════════════════════════════════════════════════
+
+NO!
+
+Your UiPath bots automatically see the new data because the CSV/JSON files
+update during refresh. No changes needed to your bots.
+
+
+❓ MOST COMMON QUESTIONS
+═══════════════════════════════════════════════════════════════════════════════
+
+Q: Do I HAVE to refresh daily?
+A: No! Refresh whenever you want new data. Dashboard works without refreshing.
+
+Q: What if I forget to refresh?
+A: Dashboard keeps showing old data. No problem. Refresh when you remember.
+
+Q: Can someone else refresh it?
+A: Yes! Anyone with the files can run the refresh.
+
+Q: Does it need internet?
+A: No! Everything works offline.
+
+Q: Is my data safe?
+A: Yes! Backups created automatically. Can't lose data.
+
+
+⚠️ ONE REQUIREMENT
+═══════════════════════════════════════════════════════════════════════════════
+
+You need Python installed on your computer.
+
+Check if you have it:
+  Windows: Open Command Prompt, type: python --version
+  Mac: Open Terminal, type: python3 --version
+
+If you don't have Python:
+  Download from: https://www.python.org/
+  Install it (takes 5 minutes)
+  During install, check "Add Python to PATH"
+  Restart computer
+  Done!
+
+This is a one-time setup. Then refresh works forever.
+
+
+✅ SUMMARY: YOU NEED TO KNOW
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Dashboard works RIGHT NOW with current data (no refresh needed)
+
+2. When you want to update with new data:
+   • Save new Excel file to dashboard folder
+   • Double-click REFRESH_DASHBOARD.bat
+   • Wait 10 seconds
+   • Done!
+
+3. Old data automatically backed up (safe!)
+
+4. UiPath integration updates automatically
+
+5. Python required (one-time install)
+
+6. Takes 10 seconds each time
+
+7. Can do daily, weekly, or whenever you want
+
+
+🎉 BOTTOM LINE
+═══════════════════════════════════════════════════════════════════════════════
+
+Your dashboard now has "smart refresh" that updates everything automatically
+when you get new data.
+
+It's like:
+✅ Refreshing a webpage (but for your whole dashboard)
+✅ Syncing your phone (but for procurement data)
+✅ Updating an app (but takes 10 seconds)
+
+Just double-click one file = Everything updates!
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+READY TO TRY?
+
+1. Make sure you have Python installed
+2. Put tomorrow's Consolidated.xlsx in your dashboard folder
+3. Double-click REFRESH_DASHBOARD.bat
+4. Watch the magic happen! ✨
+
+═══════════════════════════════════════════════════════════════════════════════
